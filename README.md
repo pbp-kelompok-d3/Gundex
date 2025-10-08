@@ -26,7 +26,7 @@ Melalui GunDex, pengguna dapat dengan mudah:
 GunDex dibangun dengan framework Django (MVT) serta memanfaatkan AJAX dan Tailwind CSS agar website terasa dinamis, modern, dan responsif di berbagai perangkat.
 
 
-## Daftar Modul
+## 📕 Daftar Modul
 👤 User (Akun & Profil)
 dikerjakan oleh Fairuz Akhtar Randrasyah
 Fitur User menangani seluruh sistem akun di GunDex. Mulai dari registrasi, login, logout, hingga pengelolaan profil pengguna. Setiap pendaki yang membuat akun akan memiliki dashboard pribadi tempat mereka dapat melihat wishlist, log pendakian, dan mengubah data profil mereka seperti nama, foto, atau biodata singkat. Fitur ini juga memastikan keamanan data pengguna dengan sistem autentikasi bawaan Django. Melalui modul User, GunDex menghadirkan pengalaman yang lebih personal bagi setiap pendaki, menjadikan aplikasi ini bukan sekadar database gunung, tetapi juga ruang digital yang mencatat jejak perjalananmu sebagai seorang hiker sejati.
@@ -47,14 +47,14 @@ Fitur Wishlist membantu pengguna menyimpan daftar gunung yang ingin mereka daki 
 dikerjakan oleh Moch Raydzan
 Fitur Log Pendakian berfungsi sebagai jurnal pribadi pendaki untuk mencatat setiap pengalaman mendakinya. Pengguna dapat menulis tanggal pendakian, jalur yang digunakan, kondisi cuaca, serta kesan pribadi selama perjalanan. Semua log ini tersimpan dalam akun pengguna dan bersifat privat, sehingga hanya pemilik akun yang bisa melihat riwayat pendakiannya sendiri. Melalui fitur ini, setiap pendaki dapat melacak progres pendakiannya dari waktu ke waktu dan mengenang momen-momen berharga di puncak gunung favorit mereka. GunDex membuat setiap langkah pendakian tidak hanya berakhir di puncak, tetapi juga terekam selamanya di jurnal digitalmu!
 
-## Initial Dataset
+## 📊 Initial Dataset
 GunDex menggunakan dataset buatan sendiri yang berisi daftar gunung di Indonesia, mencakup nama gunung, lokasi, dan ketinggian.
 Dataset dapat diakses melalui tautan berikut:
 🔗 GunDex Dataset – Google Sheets
 
 Beberapa data dikumpulkan dan disusun ulang dengan mengutip sumber terpercaya seperti ...
 
-## Role di website
+## 🧍‍♂️🧗‍♀️ Jenis Pengguna
 Admin
 Admin memiliki peran sebagai pengelola utama sistem. Mereka bertanggung jawab untuk menambah dan memperbarui data gunung, mengelola artikel pendakian, serta memantau aktivitas pengguna. Selain itu, admin juga memastikan bahwa setiap konten yang tampil di GunDex akurat dan sesuai dengan tujuan platform, yaitu menjadi sumber informasi terpercaya bagi pendaki di seluruh Indonesia.
 Hiker 
