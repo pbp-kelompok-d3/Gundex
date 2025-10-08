@@ -59,7 +59,7 @@ https://astacala.org/jalur-pendakian-gunung/
 https://datagunung.com
 
 ## 🧍‍♂️🧗‍♀️ Jenis Pengguna
-🛠️ Admin 
+🛠️ Admin  
 Admin memiliki peran sebagai pengelola utama sistem. Mereka bertanggung jawab untuk menambah dan memperbarui data gunung, mengelola artikel pendakian, serta memantau aktivitas pengguna. Selain itu, admin juga memastikan bahwa setiap konten yang tampil di GunDex akurat dan sesuai dengan tujuan platform, yaitu menjadi sumber informasi terpercaya bagi pendaki di seluruh Indonesia.  
 
 🥾 Hiker  
