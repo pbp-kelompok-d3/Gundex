@@ -67,4 +67,4 @@ Hiker adalah pengguna umum yang memanfaatkan seluruh fitur GunDex. Mereka dapat 
 
 
 ## Link PWS dan design
-rasyad.zulham-gundex.pbp.cs.ui.ac.id
+https://rasyad.zulham-gundex.pbp.cs.ui.ac.id
