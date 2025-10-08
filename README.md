@@ -27,20 +27,20 @@ GunDex dibangun dengan framework Django (MVT) serta memanfaatkan AJAX dan Tailwi
 
 
 ## 📕 Daftar Modul
-👤 User (Akun & Profil)
-Dikerjakan oleh Fairuz Akhtar Randrasyah
+👤 User (Akun & Profil)  
+Dikerjakan oleh Fairuz Akhtar Randrasyah  
 Fitur User menangani seluruh sistem akun di GunDex. Mulai dari registrasi, login, logout, hingga pengelolaan profil pengguna. Setiap pendaki yang membuat akun akan memiliki dashboard pribadi tempat mereka dapat melihat wishlist, log pendakian, dan mengubah data profil mereka seperti nama, foto, atau biodata singkat. Fitur ini juga memastikan keamanan data pengguna dengan sistem autentikasi bawaan Django. Melalui modul User, GunDex menghadirkan pengalaman yang lebih personal bagi setiap pendaki, menjadikan aplikasi ini bukan sekadar database gunung, tetapi juga ruang digital yang mencatat jejak perjalananmu sebagai seorang hiker sejati.
 
-🏔️ Explore Gunung
-Dikerjakan oleh Rasyad Zulham Rabani
+🏔️ Explore Gunung  
+Dikerjakan oleh Rasyad Zulham Rabani  
 Fitur Explore Gunung menjadi halaman utama dari GunDex, tempat para pengguna bisa menjelajahi berbagai gunung di Indonesia. Di sini, pendaki bisa mencari gunung berdasarkan nama, lokasi, provinsi, atau ketinggian dengan tampilan yang interaktif dan responsif. Setiap gunung memiliki halaman detail berisi informasi jalur pendakian, kondisi umum, dan ulasan dari pendaki lain. Dengan fitur ini, para hiker tidak perlu bingung lagi ingin mendaki ke mana — cukup buka GunDex, dan temukan gunung impianmu dengan mudah!
 
-💡 Artikel
-Dikerjakan oleh M. Adella Fathir Supriadi 
+💡 Artikel  
+Dikerjakan oleh M. Adella Fathir Supriadi   
 Fitur Artikel berisi kumpulan tulisan dan tips yang informatif seputar dunia pendakian. Pengguna bisa membaca panduan keselamatan, rekomendasi gunung untuk pemula, serta tips menjaga stamina di medan terjal. Artikel juga dapat mencakup berita terbaru tentang kondisi gunung di Indonesia. Dengan fitur ini, GunDex menjadi tempat belajar dan berbagi ilmu, bukan hanya sekadar mencari data gunung. Setiap artikel ditulis untuk membantu pendaki mempersiapkan diri lebih matang sebelum memulai petualangan berikutnya. 
 
-🎯 Wishlist
-Dikerjakan oleh Muhammad Alfa Mubarok
+🎯 Wishlist  
+Dikerjakan oleh Muhammad Alfa Mubarok  
 Fitur Wishlist membantu pengguna menyimpan daftar gunung yang ingin mereka daki di masa mendatang. Setiap kali pengguna menemukan gunung menarik di halaman Explore, mereka dapat langsung menambahkannya ke daftar Wishlist. Fitur ini juga memungkinkan pengguna untuk menghapus atau menandai gunung yang ingin mereka daki, menjaga daftar impian tetap rapi dan ter-update. Dengan Wishlist, pengguna dapat merencanakan perjalanan pendakian mereka secara lebih personal dan terorganisir. Layaknya daftar target petualangan yang siap ditaklukkan satu per satu!
 
 🥾 Log Pendakian  
@@ -55,10 +55,10 @@ Dataset dapat diakses melalui tautan berikut:
 Beberapa data dikumpulkan dan disusun ulang dengan mengutip sumber terpercaya seperti ...
 
 ## 🧍‍♂️🧗‍♀️ Jenis Pengguna
-Admin
-Admin memiliki peran sebagai pengelola utama sistem. Mereka bertanggung jawab untuk menambah dan memperbarui data gunung, mengelola artikel pendakian, serta memantau aktivitas pengguna. Selain itu, admin juga memastikan bahwa setiap konten yang tampil di GunDex akurat dan sesuai dengan tujuan platform, yaitu menjadi sumber informasi terpercaya bagi pendaki di seluruh Indonesia.
+Admin  
+Admin memiliki peran sebagai pengelola utama sistem. Mereka bertanggung jawab untuk menambah dan memperbarui data gunung, mengelola artikel pendakian, serta memantau aktivitas pengguna. Selain itu, admin juga memastikan bahwa setiap konten yang tampil di GunDex akurat dan sesuai dengan tujuan platform, yaitu menjadi sumber informasi terpercaya bagi pendaki di seluruh Indonesia.  
 
-Hiker 
+Hiker  
 Hiker adalah pengguna umum yang memanfaatkan seluruh fitur GunDex. Mereka dapat melihat daftar gunung, menambah gunung ke wishlist, mencatat log pendakian pribadi, membaca artikel, dan mengelola akun mereka sendiri. Dengan akun pribadi, setiap hiker bisa menyimpan jejak pendakiannya dan membangun arsip perjalanan mereka dari waktu ke waktu. GunDex membantu para pendaki untuk tetap terhubung dengan alam, komunitas, dan diri mereka sendiri — karena setiap pendakian punya cerita yang layak untuk diingat.
 
 
