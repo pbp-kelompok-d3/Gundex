@@ -50,7 +50,7 @@ Fitur Log Pendakian berfungsi sebagai jurnal pribadi pendaki untuk mencatat seti
 ## 📊 Initial Dataset
 GunDex menggunakan dataset buatan sendiri yang berisi daftar gunung di Indonesia, mencakup nama gunung, lokasi, dan ketinggian.
 Dataset dapat diakses melalui tautan berikut:
-🔗 GunDex Dataset – Google Sheets
+🔗 [GunDex Dataset – Google Sheets](https://docs.google.com/spreadsheets/d/10qIMDxK_dvc9FtDuoi80lleCl2Q33aeeAP5z4ca3opY/edit?gid=0#gid=0)
 
 Beberapa data dikumpulkan dan disusun ulang dengan mengutip sumber terpercaya seperti ...
 
