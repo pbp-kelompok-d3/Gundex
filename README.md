@@ -52,7 +52,11 @@ GunDex menggunakan dataset buatan sendiri yang berisi daftar gunung di Indonesia
 Dataset dapat diakses melalui tautan berikut:
 🔗 [GunDex Dataset – Google Sheets](https://docs.google.com/spreadsheets/d/10qIMDxK_dvc9FtDuoi80lleCl2Q33aeeAP5z4ca3opY/edit?gid=0#gid=0)
 
-Beberapa data dikumpulkan dan disusun ulang dengan mengutip sumber terpercaya seperti ...
+Beberapa data dikumpulkan dan disusun ulang dengan mengutip sumber terpercaya seperti
+
+https://astacala.org/jalur-pendakian-gunung/
+
+https://datagunung.com
 
 ## 🧍‍♂️🧗‍♀️ Jenis Pengguna
 Admin  
@@ -63,3 +67,4 @@ Hiker adalah pengguna umum yang memanfaatkan seluruh fitur GunDex. Mereka dapat 
 
 
 ## Link PWS dan design
+rasyad.zulham-gundex.pbp.cs.ui.ac.id
