@@ -28,7 +28,7 @@ GunDex dibangun dengan framework Django (MVT) serta memanfaatkan AJAX dan Tailwi
 
 ## 📕 Daftar Modul
 👤 User (Akun & Profil)
-dikerjakan oleh Fairuz Akhtar Randrasyah
+Dikerjakan oleh Fairuz Akhtar Randrasyah
 Fitur User menangani seluruh sistem akun di GunDex. Mulai dari registrasi, login, logout, hingga pengelolaan profil pengguna. Setiap pendaki yang membuat akun akan memiliki dashboard pribadi tempat mereka dapat melihat wishlist, log pendakian, dan mengubah data profil mereka seperti nama, foto, atau biodata singkat. Fitur ini juga memastikan keamanan data pengguna dengan sistem autentikasi bawaan Django. Melalui modul User, GunDex menghadirkan pengalaman yang lebih personal bagi setiap pendaki, menjadikan aplikasi ini bukan sekadar database gunung, tetapi juga ruang digital yang mencatat jejak perjalananmu sebagai seorang hiker sejati.
 
 🏔️ Explore Gunung
@@ -36,15 +36,15 @@ Dikerjakan oleh Rasyad Zulham Rabani
 Fitur Explore Gunung menjadi halaman utama dari GunDex, tempat para pengguna bisa menjelajahi berbagai gunung di Indonesia. Di sini, pendaki bisa mencari gunung berdasarkan nama, lokasi, provinsi, atau ketinggian dengan tampilan yang interaktif dan responsif. Setiap gunung memiliki halaman detail berisi informasi jalur pendakian, kondisi umum, dan ulasan dari pendaki lain. Dengan fitur ini, para hiker tidak perlu bingung lagi ingin mendaki ke mana — cukup buka GunDex, dan temukan gunung impianmu dengan mudah!
 
 💡 Artikel
-dikerjakan oleh M. Adella Fathir Supriadi 
+Dikerjakan oleh M. Adella Fathir Supriadi 
 Fitur Artikel berisi kumpulan tulisan dan tips yang informatif seputar dunia pendakian. Pengguna bisa membaca panduan keselamatan, rekomendasi gunung untuk pemula, serta tips menjaga stamina di medan terjal. Artikel juga dapat mencakup berita terbaru tentang kondisi gunung di Indonesia. Dengan fitur ini, GunDex menjadi tempat belajar dan berbagi ilmu, bukan hanya sekadar mencari data gunung. Setiap artikel ditulis untuk membantu pendaki mempersiapkan diri lebih matang sebelum memulai petualangan berikutnya. 
 
 🎯 Wishlist
-dikerjakan oleh Muhammad Alfa Mubarok
+Dikerjakan oleh Muhammad Alfa Mubarok
 Fitur Wishlist membantu pengguna menyimpan daftar gunung yang ingin mereka daki di masa mendatang. Setiap kali pengguna menemukan gunung menarik di halaman Explore, mereka dapat langsung menambahkannya ke daftar Wishlist. Fitur ini juga memungkinkan pengguna untuk menghapus atau menandai gunung yang ingin mereka daki, menjaga daftar impian tetap rapi dan ter-update. Dengan Wishlist, pengguna dapat merencanakan perjalanan pendakian mereka secara lebih personal dan terorganisir. Layaknya daftar target petualangan yang siap ditaklukkan satu per satu!
 
 🥾 Log Pendakian
-dikerjakan oleh Moch Raydzan
+Dikerjakan oleh Moch Raydzan
 Fitur Log Pendakian berfungsi sebagai jurnal pribadi pendaki untuk mencatat setiap pengalaman mendakinya. Pengguna dapat menulis tanggal pendakian, jalur yang digunakan, kondisi cuaca, serta kesan pribadi selama perjalanan. Semua log ini tersimpan dalam akun pengguna dan bersifat privat, sehingga hanya pemilik akun yang bisa melihat riwayat pendakiannya sendiri. Melalui fitur ini, setiap pendaki dapat melacak progres pendakiannya dari waktu ke waktu dan mengenang momen-momen berharga di puncak gunung favorit mereka. GunDex membuat setiap langkah pendakian tidak hanya berakhir di puncak, tetapi juga terekam selamanya di jurnal digitalmu!
 
 ## 📊 Initial Dataset
