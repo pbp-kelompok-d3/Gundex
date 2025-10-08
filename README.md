@@ -68,3 +68,5 @@ Hiker adalah pengguna umum yang memanfaatkan seluruh fitur GunDex. Mereka dapat 
 
 ## Link PWS dan design
 https://rasyad.zulham-gundex.pbp.cs.ui.ac.id
+
+https://www.figma.com/design/pBlQu8uLwuBH9aJQWKuQR0/Grand-Design?m=auto&t=gsURRZSHrJvA3pdE-1
