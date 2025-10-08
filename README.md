@@ -43,8 +43,8 @@ Fitur Artikel berisi kumpulan tulisan dan tips yang informatif seputar dunia pen
 Dikerjakan oleh Muhammad Alfa Mubarok
 Fitur Wishlist membantu pengguna menyimpan daftar gunung yang ingin mereka daki di masa mendatang. Setiap kali pengguna menemukan gunung menarik di halaman Explore, mereka dapat langsung menambahkannya ke daftar Wishlist. Fitur ini juga memungkinkan pengguna untuk menghapus atau menandai gunung yang ingin mereka daki, menjaga daftar impian tetap rapi dan ter-update. Dengan Wishlist, pengguna dapat merencanakan perjalanan pendakian mereka secara lebih personal dan terorganisir. Layaknya daftar target petualangan yang siap ditaklukkan satu per satu!
 
-🥾 Log Pendakian
-Dikerjakan oleh Moch Raydzan
+🥾 Log Pendakian  
+Dikerjakan oleh Moch Raydzan  
 Fitur Log Pendakian berfungsi sebagai jurnal pribadi pendaki untuk mencatat setiap pengalaman mendakinya. Pengguna dapat menulis tanggal pendakian, jalur yang digunakan, kondisi cuaca, serta kesan pribadi selama perjalanan. Semua log ini tersimpan dalam akun pengguna dan bersifat privat, sehingga hanya pemilik akun yang bisa melihat riwayat pendakiannya sendiri. Melalui fitur ini, setiap pendaki dapat melacak progres pendakiannya dari waktu ke waktu dan mengenang momen-momen berharga di puncak gunung favorit mereka. GunDex membuat setiap langkah pendakian tidak hanya berakhir di puncak, tetapi juga terekam selamanya di jurnal digitalmu!
 
 ## 📊 Initial Dataset
@@ -57,6 +57,7 @@ Beberapa data dikumpulkan dan disusun ulang dengan mengutip sumber terpercaya se
 ## 🧍‍♂️🧗‍♀️ Jenis Pengguna
 Admin
 Admin memiliki peran sebagai pengelola utama sistem. Mereka bertanggung jawab untuk menambah dan memperbarui data gunung, mengelola artikel pendakian, serta memantau aktivitas pengguna. Selain itu, admin juga memastikan bahwa setiap konten yang tampil di GunDex akurat dan sesuai dengan tujuan platform, yaitu menjadi sumber informasi terpercaya bagi pendaki di seluruh Indonesia.
+
 Hiker 
 Hiker adalah pengguna umum yang memanfaatkan seluruh fitur GunDex. Mereka dapat melihat daftar gunung, menambah gunung ke wishlist, mencatat log pendakian pribadi, membaca artikel, dan mengelola akun mereka sendiri. Dengan akun pribadi, setiap hiker bisa menyimpan jejak pendakiannya dan membangun arsip perjalanan mereka dari waktu ke waktu. GunDex membantu para pendaki untuk tetap terhubung dengan alam, komunitas, dan diri mereka sendiri — karena setiap pendakian punya cerita yang layak untuk diingat.
 
