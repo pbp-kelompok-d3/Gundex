@@ -33,7 +33,7 @@ Fitur User menangani seluruh sistem akun di GunDex. Mulai dari registrasi, login
 
 🏔️ Explore Gunung  
 Dikerjakan oleh Rasyad Zulham Rabani  
-Fitur Explore Gunung menjadi halaman utama dari GunDex, tempat para pengguna bisa menjelajahi berbagai gunung di Indonesia. Di sini, pendaki bisa mencari gunung berdasarkan nama, lokasi, provinsi, atau ketinggian dengan tampilan yang interaktif dan responsif. Setiap gunung memiliki halaman detail berisi informasi jalur pendakian, kondisi umum, dan ulasan dari pendaki lain. Dengan fitur ini, para hiker tidak perlu bingung lagi ingin mendaki ke mana — cukup buka GunDex, dan temukan gunung impianmu dengan mudah!
+Fitur Explore Gunung menjadi halaman utama dari GunDex, tempat para pengguna bisa menjelajahi berbagai gunung di Indonesia. Di sini, pendaki bisa mencari gunung berdasarkan nama, lokasi, provinsi, atau ketinggian dengan tampilan yang interaktif dan responsif. Setiap gunung memiliki halaman detail berisi informasi jalur pendakian, kondisi umum, dan ulasan dari pendaki lain. Dengan fitur ini, para hiker tidak perlu bingung lagi ingin mendaki ke mana. Cukup buka GunDex, dan temukan gunung impianmu dengan mudah!
 
 💡 Artikel  
 Dikerjakan oleh M. Adella Fathir Supriadi   
@@ -59,7 +59,7 @@ Admin
 Admin memiliki peran sebagai pengelola utama sistem. Mereka bertanggung jawab untuk menambah dan memperbarui data gunung, mengelola artikel pendakian, serta memantau aktivitas pengguna. Selain itu, admin juga memastikan bahwa setiap konten yang tampil di GunDex akurat dan sesuai dengan tujuan platform, yaitu menjadi sumber informasi terpercaya bagi pendaki di seluruh Indonesia.  
 
 Hiker  
-Hiker adalah pengguna umum yang memanfaatkan seluruh fitur GunDex. Mereka dapat melihat daftar gunung, menambah gunung ke wishlist, mencatat log pendakian pribadi, membaca artikel, dan mengelola akun mereka sendiri. Dengan akun pribadi, setiap hiker bisa menyimpan jejak pendakiannya dan membangun arsip perjalanan mereka dari waktu ke waktu. GunDex membantu para pendaki untuk tetap terhubung dengan alam, komunitas, dan diri mereka sendiri — karena setiap pendakian punya cerita yang layak untuk diingat.
+Hiker adalah pengguna umum yang memanfaatkan seluruh fitur GunDex. Mereka dapat melihat daftar gunung, menambah gunung ke wishlist, mencatat log pendakian pribadi, membaca artikel, dan mengelola akun mereka sendiri. Dengan akun pribadi, setiap hiker bisa menyimpan jejak pendakiannya dan membangun arsip perjalanan mereka dari waktu ke waktu. GunDex membantu para pendaki untuk tetap terhubung dengan alam, komunitas, dan diri mereka sendiri. Karena setiap pendakian punya cerita yang layak untuk diingat.
 
 
 ## Link PWS dan design
