@@ -8,6 +8,9 @@ class Artikel(models.Model):
     title = models.CharField(max_length=255, null=False) 
     description = models.TextField()
     image = models.ImageField(upload_to='images/', blank=True, null=True)  
+    created_at = models.DateTimeField(auto_now_add=True)   # waktu artikel dibuat
+    updated_at = models.DateTimeField(auto_now=True) 
+    views = models.PositiveIntegerField(default=0) 
 
     def __str__(self):
         return self.title
