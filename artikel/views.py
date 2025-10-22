@@ -139,7 +139,6 @@ def get_more_artikels(request):
                 "title": artikel.title,
                 "description": artikel.description[:100],
                 "thumbnail": artikel.image.url if artikel.image else "",
-                "author": artikel.user.username if artikel.user else "Anon",
             }
             for artikel in artikels
         ]
