@@ -1,35 +1,38 @@
 from django.http import JsonResponse
 from explore_gunung.models import Gunung
-from django.shortcuts import render
+from django.db.models import Q
 
 def show_json(request):
-    # Dapatkan parameter 'q' (query/kata kunci) dari request AJAX
-    query = request.GET.get('q', '') 
-    
-    # Mulai dengan semua objek
+    query = request.GET.get('q', '')
+    page = int(request.GET.get('page', 1))
+    limit = int(request.GET.get('limit', 6))  # default 6 item per page
+
     gunung_list = Gunung.objects.all()
 
-    # Jika ada kata kunci (query), filter hasilnya
     if query:
-        # Gunakan Q objects (diperlukan import) untuk logika OR (Nama ATAU Provinsi)
-        from django.db.models import Q 
-        
         gunung_list = gunung_list.filter(
-            Q(nama__icontains=query) | # Cari di kolom 'nama' (icontains = case-insensitive contains)
-            Q(provinsi__icontains=query) # Cari di kolom 'provinsi'
+            Q(nama__icontains=query) |
+            Q(provinsi__icontains=query)
         )
 
-    # Lanjutkan proses serialisasi data
+    # Pagination: ambil data sesuai halaman
+    start = (page - 1) * limit
+    end = start + limit
+    paginated_gunung = gunung_list[start:end]
+
     data = [
         {
-            'id': str(gunung.id),
-            'nama': gunung.nama,
-            'ketinggian': gunung.ketinggian,
-            'foto': gunung.foto,
-            'provinsi': gunung.provinsi,
-            'deskripsi': gunung.deksripsi,
+            'id': str(g.id),
+            'nama': g.nama,
+            'ketinggian': g.ketinggian,
+            'foto': g.foto,
+            'provinsi': g.provinsi,
+            'deskripsi': g.deksripsi,
         }
-        for gunung in gunung_list
+        for g in paginated_gunung
     ]
 
-    return JsonResponse(data, safe=False)
+    # Kirim juga apakah masih ada halaman berikutnya
+    has_more = end < gunung_list.count()
+
+    return JsonResponse({'results': data, 'has_more': has_more})

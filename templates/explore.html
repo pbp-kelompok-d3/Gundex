@@ -1,3 +1,4 @@
+{% load static %}
 <div class="container mx-auto px-4 py-10">
 
         <h1 class="text-3xl font-bold mb-2 py-4 px-1">Explore Gunung</h1>
@@ -6,12 +7,26 @@
                placeholder="Cari berdasarkan nama atau provinsi..." 
                class="w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500"
                onkeyup="getGunungData()">
-        <div id="gunung-list" class="mt-3 mb-3 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div id="gunung-list" class="mt-3 mb-3 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+        <div class="text-center mt-6">
+        <button id="show-more-btn"
+                class="hidden px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
+            Show More
+        </button>
+        </div>
 </div>
 <script>
-    // Fungsi untuk membuat elemen HTML untuk satu item gunung
+    let currentPage = 1;
+    const limit = 6;
+    let hasMore = true;
+    let isLoading = false;
+
+    const gunungListDiv = document.getElementById('gunung-list');
+    const searchInput = document.getElementById('search-input');
+    const showMoreBtn = document.getElementById('show-more-btn');
+    const nomountainurl = "{% static 'image/no-mountain.png' %}";
+
     function createGunungCard(gunung) {
-        // Template untuk card gunung
         return `
             <div class="bg-indigo-100 rounded-lg shadow-lg overflow-hidden">
                 <img src="${gunung.foto || 'https://via.placeholder.com/400x200?text=No+Image'}" 
@@ -29,43 +44,70 @@
         `;
     }
 
-    // Fungsi utama untuk mengambil data menggunakan AJAX
-    // Fungsi AJAX yang dimodifikasi
-    function getGunungData() {
-        const gunungListDiv = document.getElementById('gunung-list');
-        const searchInput = document.getElementById('search-input');
-        
-        // Ambil nilai input
-        const searchQuery = searchInput.value; 
+    function getGunungData(isNewSearch = false) {
+        if (isLoading || (!hasMore && !isNewSearch)) return;
 
-        // Buat URL lengkap dengan parameter query string
-        // Contoh: /json/?q=Semeru
-        const url = `/json/?q=${encodeURIComponent(searchQuery)}`;
+        if (isNewSearch) {
+            currentPage = 1;
+            hasMore = true;
+            gunungListDiv.innerHTML = '';
+        }
+
+        isLoading = true;
+
+        const searchQuery = searchInput.value;
+        const url = `/json/?q=${encodeURIComponent(searchQuery)}&page=${currentPage}&limit=${limit}`;
 
         fetch(url)
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Gagal mengambil data.');
-                }
-                return response.json();
-            })
+            .then(response => response.json())
             .then(data => {
-                let htmlContent = '';
-                if (data.length === 0) {
-                    htmlContent = '<p class="text-gray-500 text-center col-span-full mt-8">Tidak ada gunung yang ditemukan.</p>';
+                if (data.results.length === 0 && currentPage === 1) {
+                    gunungListDiv.innerHTML = `
+                        <div class="bg-white rounded-lg p-12 text-center col-span-full">
+                            <div class="h-48 mx-auto mb-4">
+                                <img src="${nomountainurl}" alt="No mountain available" class="w-full h-full object-contain">
+                            </div>
+                        </div>`;
+                    showMoreBtn.classList.add('hidden');
                 } else {
-                    data.forEach(gunung => {
-                        htmlContent += createGunungCard(gunung);
+                    data.results.forEach(gunung => {
+                        gunungListDiv.innerHTML += createGunungCard(gunung);
                     });
+
+                    hasMore = data.has_more;
+                    if (hasMore) {
+                        showMoreBtn.classList.remove('hidden');
+                        currentPage++;
+                    } else {
+                        showMoreBtn.classList.add('hidden');
+                    }
                 }
-                gunungListDiv.innerHTML = htmlContent;
+
+                isLoading = false;
             })
             .catch(error => {
-                console.error('Ada masalah:', error);
-                gunungListDiv.innerHTML = '<p class="text-red-500">Gagal memuat data gunung.</p>';
+                console.error('Error:', error);
+                isLoading = false;
             });
     }
 
-    // Panggil fungsi ketika dokumen (halaman) sudah selesai dimuat
-    document.addEventListener('DOMContentLoaded', getGunungData);
+
+    // Event: pertama kali load
+    document.addEventListener('DOMContentLoaded', () => {
+        getGunungData();
+    });
+
+    // Event: tombol "Show More"
+    showMoreBtn.addEventListener('click', () => {
+        getGunungData();
+    });
+
+    // Event: pencarian baru (pakai debounce biar gak spam fetch)
+    let typingTimer;
+    searchInput.addEventListener('keyup', () => {
+        clearTimeout(typingTimer);
+        typingTimer = setTimeout(() => {
+            getGunungData(true);
+        }, 400); // 0.4 detik setelah berhenti ngetik
+    });
 </script>
