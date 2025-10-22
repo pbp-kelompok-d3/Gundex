@@ -9,6 +9,3 @@ class Gunung(models.Model):
     provinsi = models.CharField(max_length=255)
     foto = models.URLField(blank=True, null=True)
     deksripsi = models.TextField()
-    
-    def __str__(self):
-        return self.nama
