@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="container mx-auto p-4 md:p-8">
+    
+    <h1 class="text-3xl font-bold text-gray-900 mb-6">
+        Wishlist Pendakian {{ nama_user }}
+    </h1>
+
+    {% if not items %}
+        <div class="bg-blue-100 border-l-4 border-blue-500 text-blue-700 p-4" role="alert">
+            <p class="font-bold">Wishlist Kosong</p>
+            <p>Kamu belum menambahkan gunung ke wishlist. Mulai <a href="{% url 'explore_gunung:show_explore' %}" class="underline">jelajahi gunung</a>!</p>
+            </div>
+    {% else %}
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            
+            {% for item in items %}
+            <div id="item-card-{{ item.pk }}" class="bg-white rounded-lg shadow-lg overflow-hidden transition-transform transform hover:-translate-y-1">
+                <img class="h-48 w-full object-cover" src="{{ item.gunung.gambar_url }}" alt="Foto {{ item.gunung.nama }}"> <div class="p-6">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-2">{{ item.gunung.nama }}</h2>
+                    <p class="text-gray-600 mb-4">{{ item.gunung.lokasi }} - {{ item.gunung.ketinggian }} mdpl</p> <p class="text-sm text-gray-500 mb-4">Ditambahkan pada: {{ item.added_at|date:"d M Y" }}</p>
+                    
+                    <button 
+                        type="button" 
+                        class="remove-btn bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded w-full transition duration-300 ease-in-out"
+                        data-item-id="{{ item.pk }}">
+                        Hapus dari Wishlist
+                    </button>
+                </div>
+            </div>
+            {% endfor %}
+
+        </div>
+    {% endif %}
+</div>
+
+<script>
+document.querySelectorAll('.remove-btn').forEach(button => {
+    button.addEventListener('click', function() {
+        const itemId = this.dataset.itemId;
+        
+        // Dapatkan CSRF token (wajib untuk POST di Django)
+        const csrfToken = '{{ csrf_token }}';
+
+        fetch(`/wishlist/remove/${itemId}/`, { // Sesuaikan URL
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': csrfToken,
+                'Content-Type': 'application/json'
+            },
+        })
+        .then(response => response.json())
+        .then(data => {
+            if(data.status === 'success') {
+                // Hapus card dari tampilan jika berhasil
+                document.getElementById(`item-card-${itemId}`).remove();
+                alert(data.message); // Ganti dengan toast/modal yang lebih baik jika ada waktu
+            } else {
+                alert(data.message);
+            }
+        });
+    });
+});
+</script>
+
+{% endblock content %}
