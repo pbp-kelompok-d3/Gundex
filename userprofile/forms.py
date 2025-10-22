@@ -1,4 +1,4 @@
-from django.forms import ModelForm, CharField, PasswordInput, BooleanField
+from django.forms import ModelForm, CharField, PasswordInput
 from django.core.exceptions import ValidationError
 from django.utils.html import strip_tags
 from .models import UserProfile
@@ -6,7 +6,6 @@ from .models import UserProfile
 class RegisterForm(ModelForm):
     password = CharField(widget=PasswordInput())
     confirm_password = CharField(widget=PasswordInput())
-    register_as_admin = BooleanField(required=False, label="Register as Admin")
     
     class Meta:
         model = UserProfile
@@ -41,15 +40,19 @@ class RegisterForm(ModelForm):
 class EditProfileForm(ModelForm):
     class Meta:
         model = UserProfile
-        fields = ['username', 'bio']
+        fields = ['first_name', 'last_name', 'bio']
     
     def __init__(self, *args, **kwargs):
         self.user = kwargs.pop('user', None)
         super().__init__(*args, **kwargs)
     
-    def clean_username(self):
-        username = self.cleaned_data["username"]
-        return strip_tags(username)
+    def clean_first_name(self):
+        first_name = self.cleaned_data["first_name"]
+        return strip_tags(first_name)
+    
+    def clean_last_name(self):
+        last_name = self.cleaned_data["last_name"]
+        return strip_tags(last_name)
     
     def clean_bio(self):
         bio = self.cleaned_data["bio"]
