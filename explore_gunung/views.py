@@ -1,6 +1,7 @@
 from django.http import JsonResponse
 from explore_gunung.models import Gunung
 from django.db.models import Q
+from django.shortcuts import render, redirect, get_object_or_404
 
 def show_json(request):
     query = request.GET.get('q', '')
@@ -36,3 +37,12 @@ def show_json(request):
     has_more = end < gunung_list.count()
 
     return JsonResponse({'results': data, 'has_more': has_more})
+
+def show_gunung(request, id):
+    gunung = get_object_or_404(Gunung, pk=id)
+
+    context = {
+        'gunung': gunung
+    }
+
+    return render(request, "gunung_details.html", context)
