@@ -3,84 +3,44 @@
 
 {% block content %}
 <link rel="stylesheet" type="text/css" href="{% static 'css/global.css' %}">
-<div class="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-    <div class="max-w-2xl mx-auto space-y-8">
-        <!-- Header -->
-        <div class="text-center">
-            <h2 class="text-3xl font-bold text-gray-900">
-                Your <span class="text-green-600">Gun</span>dex Profile
-            </h2>
-            <p class="mt-2 text-sm text-gray-600">
-                Manage your hiking profile information
+
+<!-- Banner Section - Fixed Background -->
+<div class="fixed top-0 left-0 w-full h-[60vh] z-0">
+    <img src="{% static 'image/hiking.jpg' %}" alt="Hiking Banner" class="w-full h-full object-cover">
+    <!-- Optional overlay for better text readability -->
+    <div class="absolute inset-0 bg-black/40"></div>
+</div>
+
+<!-- Main Content - This will cover the banner on scroll -->
+<div class="relative z-10 bg-transparent pt-16">
+    <!-- Hero Section with Banner Text -->
+    <div class="min-h-[60vh] flex items-center justify-center text-white relative z-20">
+        <div class="text-center px-4">
+            <h1 style="text-align: center;" class="text-4xl md:text-6xl font-bold mb-6 text-white drop-shadow-lg">
+                <span class="text-green-400">Gun</span>dex Profile
+            </h1>
+            <p style="text-align: center;" class="text-lg md:text-xl mb-8 text-white/90 drop-shadow-md max-w-2xl mx-auto">
+                Manage your hiking profile information and connect with the community
             </p>
         </div>
+    </div>
 
-        <!-- Profile Information Card -->
-        <div class="bg-white shadow rounded-lg p-6">
-            <h3 class="text-lg font-medium text-gray-900 mb-6">Profile Information</h3>
-            
-            <!-- Read-only Information -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-                <!-- First Name (Read-only) -->
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">First Name</label>
-                    <div class="px-3 py-2 border border-gray-300 bg-gray-50 rounded-md text-gray-600">
-                        {{ user.first_name|default:"Not set" }}
-                    </div>
-                    <p class="text-xs text-gray-500 mt-1">Cannot be changed</p>
-                </div>
-
-                <!-- Last Name (Read-only) -->
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Last Name</label>
-                    <div class="px-3 py-2 border border-gray-300 bg-gray-50 rounded-md text-gray-600">
-                        {{ user.last_name|default:"Not set" }}
-                    </div>
-                    <p class="text-xs text-gray-500 mt-1">Cannot be changed</p>
-                </div>
-
-                <!-- Email (Read-only) -->
-                <div class="md:col-span-2">
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Email</label>
-                    <div class="px-3 py-2 border border-gray-300 bg-gray-50 rounded-md text-gray-600">
-                        {{ user.email|default:"Not set" }}
-                    </div>
-                    <p class="text-xs text-gray-500 mt-1">Cannot be changed</p>
-                </div>
-
-                <!-- Account Type (Read-only) -->
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Account Type</label>
-                    <div class="px-3 py-2 border border-gray-300 bg-gray-50 rounded-md text-gray-600">
-                        {% if user.is_admin %}
-                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                                Admin
-                            </span>
-                        {% else %}
-                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                                Hiker
-                            </span>
-                        {% endif %}
-                    </div>
-                </div>
-
-                <!-- Last Login -->
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Last Login</label>
-                    <div class="px-3 py-2 border border-gray-300 bg-gray-50 rounded-md text-gray-600">
-                        {{ last_login|default:"Not available" }}
-                    </div>
-                </div>
+    <!-- Profile Form Section - This will cover the banner -->
+    <div id="profile-form" class="bg-gray-50 w-full min-h-screen relative z-30">
+        <div class="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+            <!-- Header Section -->
+            <div class="mb-8 text-center">
+                <h2 class="text-3xl font-bold text-gray-900 mb-2">Profile Information</h2>
+                <p class="text-gray-600">Update your personal information and hiking details</p>
+                <div class="w-16 h-1 bg-green-600 mx-auto rounded-full mt-4"></div>
             </div>
 
-            <!-- Edit Form -->
-            <div class="border-t border-gray-200 pt-6">
-                <h4 class="text-md font-medium text-gray-900 mb-4">Editable Information</h4>
-                
+            <!-- Profile Form Card -->
+            <div class="bg-white shadow-2xl rounded-2xl p-8">
                 <!-- Messages -->
                 {% if messages %}
                     {% for message in messages %}
-                        <div class="mb-4 bg-{% if message.tags == 'success' %}green{% elif message.tags == 'error' %}red{% else %}blue{% endif %}-50 border border-{% if message.tags == 'success' %}green{% elif message.tags == 'error' %}red{% else %}blue{% endif %}-200 rounded-md p-4">
+                        <div class="mb-6 bg-{% if message.tags == 'success' %}green{% elif message.tags == 'error' %}red{% else %}blue{% endif %}-50 border border-{% if message.tags == 'success' %}green{% elif message.tags == 'error' %}red{% else %}blue{% endif %}-200 rounded-xl p-4">
                             <div class="text-sm text-{% if message.tags == 'success' %}green{% elif message.tags == 'error' %}red{% else %}blue{% endif %}-600">
                                 {{ message }}
                             </div>
@@ -91,33 +51,107 @@
                 <form method="POST" class="form-style">
                     {% csrf_token %}
                     
-                    <div class="space-y-6">
-                        <!-- Username (Editable) -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Username (Read-only) -->
                         <div>
-                            <label for="{{ form.username.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
-                                Username *
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                Username
                             </label>
-                            {{ form.username }}
-                            <p class="text-xs text-gray-500 mt-1">This will be your display name on GunDex</p>
+                            <input type="text" 
+                                   value="{{ user.username|default:'Not set' }}" 
+                                   disabled 
+                                   readonly
+                                   class="mt-1 block w-full px-4 py-3 border border-gray-300 bg-gray-50 text-gray-600 rounded-xl cursor-not-allowed">
                         </div>
 
-                        <!-- Bio (Editable) -->
+                        <!-- Email (Read-only) -->
                         <div>
-                            <label for="{{ form.bio.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
-                                Bio
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                Email
                             </label>
-                            {{ form.bio }}
-                            <p class="text-xs text-gray-500 mt-1">Tell other hikers about yourself (optional)</p>
+                            <input type="email" 
+                                   value="{{ user.email|default:'Not set' }}" 
+                                   disabled 
+                                   readonly
+                                   class="mt-1 block w-full px-4 py-3 border border-gray-300 bg-gray-50 text-gray-600 rounded-xl cursor-not-allowed">
                         </div>
+
+                        <!-- First Name (Editable) -->
+                        <div>
+                            <label for="{{ form.first_name.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                                First Name
+                            </label>
+                            <input type="text" 
+                                   name="first_name" 
+                                   id="{{ form.first_name.id_for_label }}"
+                                   value="{{ form.first_name.value|default:'' }}"
+                                   class="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all">
+                        </div>
+
+                        <!-- Last Name (Editable) -->
+                        <div>
+                            <label for="{{ form.last_name.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                                Last Name
+                            </label>
+                            <input type="text" 
+                                   name="last_name" 
+                                   id="{{ form.last_name.id_for_label }}"
+                                   value="{{ form.last_name.value|default:'' }}"
+                                   class="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all">
+                        </div>
+
+                        <!-- Account Type (Read-only) -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                Account Type
+                            </label>
+                            <div class="mt-1 block w-full px-4 py-3 border border-gray-300 bg-gray-50 rounded-xl">
+                                {% if user.is_admin %}
+                                    <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
+                                        🛠️ Admin
+                                    </span>
+                                {% else %}
+                                    <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
+                                        🥾 Hiker
+                                    </span>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- Last Login (Read-only) -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                Last Login
+                            </label>
+                            <input type="text" 
+                                   value="{{ last_login|default:'Not available' }}" 
+                                   disabled 
+                                   readonly
+                                   class="mt-1 block w-full px-4 py-3 border border-gray-300 bg-gray-50 text-gray-600 rounded-xl cursor-not-allowed">
+                        </div>
+                    </div>
+
+                    <!-- Bio (Editable) - Full width -->
+                    <div class="mt-8">
+                        <label for="{{ form.bio.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                            Bio
+                        </label>
+                        <textarea name="bio" 
+                                  id="{{ form.bio.id_for_label }}" 
+                                  rows="4"
+                                  placeholder="Tell other hikers about yourself..."
+                                  class="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all resize-none">{{ form.bio.value|default:'' }}</textarea>
+                        <p class="text-xs text-gray-500 mt-2">Share your hiking experience and inspire others (optional)</p>
                     </div>
 
                     <!-- Error Messages -->
                     {% if form.errors %}
-                        <div class="mt-4 bg-red-50 border border-red-200 rounded-md p-4">
+                        <div class="mt-6 bg-red-50 border border-red-200 rounded-xl p-4">
                             <div class="text-sm text-red-600">
+                                <h4 class="font-medium mb-2">Please fix the following errors:</h4>
                                 {% for field, errors in form.errors.items %}
                                     {% for error in errors %}
-                                        <p>{{ error }}</p>
+                                        <p class="mb-1">• {{ error }}</p>
                                     {% endfor %}
                                 {% endfor %}
                             </div>
@@ -125,27 +159,50 @@
                     {% endif %}
 
                     <!-- Action Buttons -->
-                    <div class="flex space-x-4 pt-6">
-                        <button type="submit" class="bg-green-600 hover:bg-green-700 text-white font-medium py-3 px-6 rounded-md transition-colors">
+                    <div class="flex flex-col sm:flex-row gap-4 pt-8 mt-8 border-t border-gray-200">
+                        <button type="submit" class="flex-1 bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white font-medium py-4 px-6 rounded-xl transition-all transform hover:scale-105 shadow-lg">
                             Update Profile
                         </button>
-                        <a href="{% url 'main:show_main' %}" class="bg-gray-600 hover:bg-gray-700 text-white font-medium py-3 px-6 rounded-md transition-colors">
+                        <a href="{% url 'main:show_main' %}" class="flex-1 bg-gradient-to-r from-gray-600 to-gray-700 hover:from-gray-700 hover:to-gray-800 text-white font-medium py-4 px-6 rounded-xl transition-all transform hover:scale-105 shadow-lg text-center">
                             Back to Home
                         </a>
                     </div>
                 </form>
             </div>
-        </div>
 
-        <!-- Account Actions -->
-        <div class="bg-white shadow rounded-lg p-6">
-            <h3 class="text-lg font-medium text-gray-900 mb-4">Account Actions</h3>
-            <div class="flex space-x-4">
-                <a href="{% url 'userprofile:logout' %}" class="bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-4 rounded-md transition-colors">
-                    Logout
-                </a>
+            <!-- Account Actions -->
+            <div class="mt-8">
+                <div class="bg-white shadow-lg rounded-xl p-6">
+                    <h3 class="text-lg font-medium text-gray-900 mb-4 flex items-center">
+                        Account Actions
+                    </h3>
+                    <div class="flex space-x-4">
+                        <a href="{% url 'userprofile:logout' %}" class="bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white font-medium py-3 px-6 rounded-xl transition-all transform hover:scale-105 shadow-md">
+                            Logout
+                        </a>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 </div>
+
+<style>
+    /* Enhanced form styling */
+    .form-style input:focus, 
+    .form-style textarea:focus {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(34, 197, 94, 0.15);
+    }
+    
+    /* Smooth scrolling */
+    html {
+        scroll-behavior: smooth;
+    }
+    
+    /* Smooth transitions */
+    * {
+        transition: all 0.2s ease-in-out;
+    }
+</style>
 {% endblock content %}
