@@ -2,6 +2,7 @@ from django.http import JsonResponse
 from explore_gunung.models import Gunung
 from django.db.models import Q
 from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth.decorators import login_required
 
 def show_json(request):
     query = request.GET.get('q', '')
@@ -35,9 +36,11 @@ def show_json(request):
 
     # Kirim juga apakah masih ada halaman berikutnya
     has_more = end < gunung_list.count()
+    is_admin = request.user.is_authenticated and getattr(request.user, "is_admin", False)
 
-    return JsonResponse({'results': data, 'has_more': has_more})
+    return JsonResponse({'results': data, 'has_more': has_more, 'is_admin': is_admin})
 
+@login_required(login_url='/userprofile/login/')
 def show_gunung(request, id):
     gunung = get_object_or_404(Gunung, pk=id)
 
