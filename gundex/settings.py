@@ -51,6 +51,7 @@ INSTALLED_APPS = [
     'main',
     'explore_gunung',
     'userprofile',
+    'artikel',
 ]
 
 AUTH_USER_MODEL = 'userprofile.UserProfile'

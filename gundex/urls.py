@@ -22,4 +22,4 @@ urlpatterns = [
     path('', include('main.urls')),
     path('', include('explore_gunung.urls')),
     path('userprofile/', include('userprofile.urls')),
-]
+    path('artikel/', include('artikel.urls')),]

@@ -1,0 +1,192 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block meta %}
+<title>GunDex — {{ artikel.title }}</title>
+<link rel="stylesheet" href="{% static 'css/article.css' %}">
+{% endblock meta %}
+
+{% block content %}
+{% include 'navbar.html' %}
+
+<body class="bg-[#CAD593] text-[#243010] font-sans">
+  <main class="max-w-5xl mx-auto mt-8 px-6 py-8 bg-[#F9FAF5] rounded-2xl shadow-lg">
+    <!-- Breadcrumb -->
+    <nav class="text-sm mb-6 text-[#243010]">
+      <a href="{% url 'artikel:show_artikel' %}" class="hover:text-[#87A330] transition-colors duration-300">
+        ← Kembali ke Artikel
+      </a>
+    </nav>
+
+    <!-- Judul Artikel -->
+    <h1 class="text-3xl font-extrabold text-[#243010] mb-4 leading-tight border-l-4 border-[#87A330] pl-4">
+      {{ artikel.title }}
+    </h1>
+
+    <!-- Gambar Utama -->
+    {% if artikel.image %}
+    <div class="mb-8 rounded-xl overflow-hidden shadow-lg">
+      <img src="{{ artikel.image }}" alt="{{ artikel.title }}"
+        class="w-full h-96 object-cover">
+    </div>
+    {% endif %}
+
+    <!-- Isi Artikel -->
+    <article class="prose prose-lg max-w-none text-[#243010] leading-relaxed mb-10">
+      {{ artikel.description|linebreaks }}
+    </article>
+
+    <div class="flex items-center gap-2 mt-6">
+      <button id="likeBtn"
+        class="flex items-center gap-2 px-4 py-2 bg-[#F9FAF5] rounded-lg shadow hover:shadow-md border border-[#A1C349]">
+        <span id="likeIcon">❤️</span>
+        <span id="likeText">{{ artikel.total_likes }} Suka</span>
+      </button>
+    </div>
+
+    <!-- Garis Pemisah -->
+    <hr class="my-10 border-[#A1C349]">
+
+    <!-- Bagian Navigasi Bawah -->
+    <div class="flex justify-between items-center text-sm text-[#243010]">
+      <div class="flex space-x-3">
+        {% if is_admin %}
+        <div class="flex gap-3 mt-6">
+          <button id="editBtn" 
+                  class="px-4 py-2 bg-[#A1C349] text-[#243010] font-semibold rounded-lg hover:bg-[#87A330]">
+            ✏️ Edit Artikel
+          </button>
+          <button id="deleteBtn" 
+                  class="px-4 py-2 bg-[#D9534F] text-white font-semibold rounded-lg hover:bg-[#C9302C]">
+            🗑️ Hapus
+          </button>
+        </div>
+        {% endif %}
+        <script>
+      const artikelID = "{{ artikel.id }}";
+
+      // === EDIT: load modal, pasang event, dan submit AJAX ===
+      document.getElementById("editBtn")?.addEventListener("click", () => {
+        fetch(`/artikel/edit-artikel-modal/${artikelID}/`)
+          .then(resp => resp.text())
+          .then(html => {
+            // sisipkan modal ke body
+            document.body.insertAdjacentHTML("beforeend", html);
+
+            // ambil elemen-elemen penting
+            const modal = document.getElementById("editModal");
+            const form = document.getElementById("editForm");
+            const cancelBtn = document.getElementById("cancelBtn");
+            const closeIcon = document.getElementById("closeIcon");
+            const imageInput = form.querySelector('input[name="image"]');
+            const previewWrap = document.getElementById("editImagePreview");
+            const previewImg = previewWrap?.querySelector("img");
+
+            // tampilkan modal
+            modal.classList.remove("hidden");
+
+            // tombol tutup
+            [cancelBtn, closeIcon].forEach(btn => btn?.addEventListener("click", () => {
+              modal.remove(); // hapus dari DOM sekalian
+            }));
+
+            // preview otomatis
+            imageInput?.addEventListener("input", () => {
+              const url = imageInput.value.trim();
+              if (url.startsWith("http://") || url.startsWith("https://")) {
+                if (previewImg) previewImg.src = url;
+                previewWrap?.classList.remove("hidden");
+              } else {
+                previewWrap?.classList.add("hidden");
+              }
+            });
+
+            // submit via AJAX ke endpoint yang benar: /edit-artikel/<id>/
+            form.addEventListener("submit", async (e) => {
+              e.preventDefault();
+              const payload = new URLSearchParams();
+              payload.append("title", form.title.value.trim());
+              payload.append("description", form.description.value.trim());
+              payload.append("image", (imageInput?.value || "").trim());
+              payload.append("csrfmiddlewaretoken", "{{ csrf_token }}");
+
+              try {
+                const resp = await fetch(`/artikel/edit-artikel/${artikelID}/`, {
+                  method: "POST",
+                  headers: {
+                    "Content-Type": "application/x-www-form-urlencoded",
+                    "X-Requested-With": "XMLHttpRequest",
+                  },
+                  body: payload.toString(),
+                });
+                const data = await resp.json();
+                if (data.status === "success") {
+                  showToast("Artikel berhasil diperbarui!");
+                  setTimeout(() => location.reload(), 1200);
+                } else {
+                  showToast(data.message || "Gagal memperbarui artikel.", "error");
+                }
+              } catch {
+                alert("Terjadi kesalahan koneksi.");
+              }
+            });
+          });
+        });
+
+        // 🔸 DELETE tombol (AJAX)
+        document.getElementById("deleteBtn")?.addEventListener("click", async () => {
+          if (!confirm("Yakin ingin menghapus artikel ini?")) return;
+
+          try {
+            const res = await fetch(`/artikel/delete-artikel/${artikelID}/`, {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/x-www-form-urlencoded",
+                "X-Requested-With": "XMLHttpRequest",
+                "X-CSRFToken": "{{ csrf_token }}",
+              },
+            });
+
+            const data = await res.json();
+            if (data.status === "success") {
+              showToast("Artikel berhasil dihapus!");
+              setTimeout(() => window.location.href = "{% url 'artikel:show_artikel' %}", 1000);
+            } else {
+              showToast("Gagal menghapus artikel.", "error");
+            }
+          } catch (err) {
+            alert("Kesalahan koneksi.");
+          }
+        });
+
+
+        const likeBtn = document.getElementById("likeBtn");
+        likeBtn?.addEventListener("click", async () => {
+          try {
+            const res = await fetch(`/artikel/like-artikel/{{ artikel.id }}/`, {
+              method: "POST",
+              headers: {
+                "X-CSRFToken": "{{ csrf_token }}",
+                "X-Requested-With": "XMLHttpRequest"
+              }
+            });
+            const data = await res.json();
+            if (data.status === "success") {
+              showToast(data.liked ? "Kamu menyukai artikel ini ❤️" : "Suka dibatalkan 💔");
+              document.getElementById("likeText").textContent = `${data.total_likes} Suka`;
+            }
+          } catch {
+            showToast("Gagal memproses like.", "error");
+          }
+        });
+        </script>
+
+      <a href="{% url 'artikel:show_artikel' %}" 
+         class="ml-auto text-[#87A330] font-medium hover:text-[#A1C349] transition-colors duration-300">
+        ← Kembali ke daftar artikel
+      </a>
+    </div>
+  </main>
+
+</body>
+{% endblock %}
