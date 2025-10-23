@@ -1,10 +1,8 @@
 import csv
 import os
 from django.core.management.base import BaseCommand
-from explore_gunung.models import Gunung # Ganti 'explore_gunung' jika nama app Anda berbeda
+from explore_gunung.models import Gunung
 
-# Tentukan lokasi file CSV (ubah path ini sesuai lokasi file Anda)
-# Kami asumsikan file berada di direktori project utama
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 CSV_PATH = os.path.join(BASE_DIR, 'MastersheetsGunung-Sheet1.csv')
 
