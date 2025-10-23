@@ -33,7 +33,7 @@ class Command(BaseCommand):
                 for row in reader:
                     keys = {k.strip().lower(): (v or '').strip() for k, v in row.items()}
                     artikel_list.append(
-                        Artikel.objects.create(
+                        Artikel(
                             title=keys.get('judul', ''),
                             description=keys.get('isi', ''),
                             image=keys.get('thumbnail', ''),
