@@ -69,7 +69,7 @@ def edit_gunung(request, id):
         gunung.nama = data.get('nama', gunung.nama)
         gunung.provinsi = data.get('provinsi', gunung.provinsi)
         gunung.ketinggian = data.get('ketinggian', gunung.ketinggian)
-        gunung.deskripsi = data.get('deskripsi', gunung.deksripsi)
+        gunung.deksripsi = data.get('deskripsi', gunung.deksripsi)
         gunung.foto = data.get('foto', gunung.foto)
         
         if not gunung.nama or not gunung.provinsi:
