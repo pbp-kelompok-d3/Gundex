@@ -4,6 +4,7 @@ from django.http import HttpResponse, JsonResponse, HttpResponseForbidden
 from django.shortcuts import render, get_object_or_404, redirect
 from django.template.loader import render_to_string
 from django.urls import reverse
+from django.db import IntegrityError, transaction 
 from .forms import LogPendakianForm
 from .models import LogPendakian
 
@@ -28,7 +29,8 @@ def log_create(request):
             obj = form.save(commit=False)
             obj.user = request.user
             try:
-                obj.save()
+                with transaction.atomic():
+                    obj.save()
             except IntegrityError:
                 form.add_error(None, "Riwayat untuk gunung & tanggal mulai tersebut sudah ada.")
                 html = render_to_string(
@@ -37,6 +39,7 @@ def log_create(request):
                     request=request,
                 )
                 return JsonResponse({"ok": False, "html": html}, status=400)
+
             row = render_to_string("logpendakian/partials/row.html", {"x": obj}, request=request)
             return JsonResponse({"ok": True, "html": row})
         html = render_to_string(
@@ -56,12 +59,12 @@ def log_create(request):
 @login_required
 def log_update(request, pk):
     obj = get_object_or_404(LogPendakian, pk=pk, user=request.user)
-
     if request.method == "POST":
         form = LogPendakianForm(request.POST, instance=obj)
         if form.is_valid():
             try:
-                obj = form.save()
+                with transaction.atomic():
+                    obj = form.save()
             except IntegrityError:
                 form.add_error(None, "Kombinasi gunung & tanggal mulai sudah dipakai di log lain Anda.")
                 html = render_to_string(
@@ -71,7 +74,7 @@ def log_update(request, pk):
                 )
                 return JsonResponse({"ok": False, "html": html}, status=400)
             row = render_to_string("logpendakian/partials/row.html", {"x": obj}, request=request)
-            return JsonResponse({"ok": True, "html": row, "id": obj.pk})
+            return JsonResponse({"ok": True, "html": row, "id": str(obj.pk)}) 
         html = render_to_string(
             "logpendakian/partials/form.html",
             {"form": form, "action_url": reverse("logpendakian:update", args=[obj.pk])},
@@ -86,20 +89,20 @@ def log_update(request, pk):
     )
     return JsonResponse({"html": html})
 
+
 @login_required
 def log_delete(request, pk):
-    obj = get_object_or_404(LogPendakian, pk=pk, user=request.user)
-    is_ajax = request.headers.get("x-requested-with") == "XMLHttpRequest"
-    if request.method == "POST":
-        obj_id = obj.id
-        obj.delete()
-        if is_ajax:
-            return JsonResponse({"ok": True, "id": obj_id})
-        return redirect("logpendakian:list")
-    html = render_to_string(
-        "logpendakian/partials/confirm_delete.html",
-        {"obj": obj, "request": request},
-    )
-    if is_ajax:
-        return JsonResponse({"html": html})
-    return HttpResponse(html) 
+    if request.method == "GET":
+        obj = get_object_or_404(LogPendakian, pk=pk, user=request.user)
+        html = render_to_string(
+            "logpendakian/partials/confirm_delete.html",
+            {"obj": obj, "request": request},
+        )
+        if request.headers.get("x-requested-with") == "XMLHttpRequest":
+            return JsonResponse({"html": html})
+        return HttpResponse(html)
+    deleted_count, _ = LogPendakian.objects.filter(pk=pk, user=request.user).delete()
+    return JsonResponse({
+        "ok": bool(deleted_count),
+        "id": str(pk)
+    })
