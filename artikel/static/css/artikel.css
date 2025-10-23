@@ -1,0 +1,27 @@
+#carousel {
+  position: relative;
+  overflow: hidden;
+}
+
+#carousel-inner {
+  display: flex;
+  transition: transform 0.7s ease-in-out;
+}
+
+#carousel img {
+  border-radius: 0.75rem;
+  object-fit: cover;
+}
+
+#prev, #next img {
+  transition: opacity 0.3s;
+}
+
+#prev img:hover, #next img:hover {
+  opacity: 1;
+}
+
+.shadow:hover {
+  transform: scale(1.01);
+  transition: transform 0.2s ease-in-out;
+}

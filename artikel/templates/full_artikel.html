@@ -2,88 +2,233 @@
 {% load static %}
 
 {% block meta %}
-<title>Gundex</title>
+<title>GunDex — Artikel Pendakian</title>
 <link rel="stylesheet" href="{% static 'css/article.css' %}">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper/swiper-bundle.min.css"/>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" integrity="sha384-k6RqeWeci5ZR/Lv4MR0sA0FfDOM5U8/pdu5ZL3tLiOaXlA1zJ1L6pup1T2RO9g59" crossorigin="anonymous">
-<script src="https://cdn.jsdelivr.net/npm/swiper/swiper-bundle.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/dompurify@3.1.7/dist/purify.min.js"></script>
-
 {% endblock meta %}
+
 {% block content %}
 {% include 'navbar.html' %}
+<body class="bg-[#CAD593] text-[#243010] font-sans">
 
-    <!-- Container -->
-    <main class="max-w-6xl mx-auto mt-6 px-6 grid grid-cols-3 gap-6">
+<main class="max-w-6xl mx-auto mt-8 px-6 grid grid-cols-3 gap-6">
 
-        <!-- Carousel Berita Terbaru -->
-        <section class="col-span-3 mb-6">
-            <h2 class="text-xl font-semibold mb-2">🧭 Artikel Terbaru</h2>
-            <div id="carousel" class="relative overflow-hidden rounded-lg shadow-lg h-64">
-                <div id="carousel-inner" class="flex transition-transform duration-700 ease-in-out">
-                    {% for artikel in latest_artikels %}
+    <!-- 🧭 Artikel Hot -->
+    <section class="col-span-3 mb-8">
+        <div class="mb-3 flex items-center justify-between">
+            <h2 class="text-2xl font-semibold text-[#243010] border-l-4 border-[#87A330] pl-3">
+                🧭 Artikel Hot
+            </h2>
+        </div>
+
+        <!-- Carousel Container -->
+        <div id="carousel" class="relative overflow-hidden rounded-xl shadow-lg h-80 bg-[#A1C349]">
+            <div id="carousel-inner" class="flex transition-transform duration-700 ease-in-out">
+                {% for artikel in latest_artikels %}
                     <div class="min-w-full relative">
-                        <img src="{{ artikel.image.url }}" alt="{{ artikel.title }}" class="w-full h-64 object-cover rounded-lg">
-                        <div class="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 text-white p-3 text-center">
-                            <h3 class="font-bold text-lg">{{ artikel.title }}</h3>
+                        <img src="{{ artikel.image }}" 
+                             alt="{{ artikel.title }}" 
+                             class="w-full h-80 object-cover rounded-xl cursor-pointer"
+                             onclick="window.location.href='{% url 'artikel:artikel_detail' artikel.id %}'">
+                        <!-- Overlay gradient for better readability -->
+                        <div class="absolute inset-0 flex flex-col justify-end bg-gradient-to-t from-[#243010]/80 via-[#243010]/10 to-transparent rounded-xl">
+                            <div class="p-6">
+                                <a href="{% url 'artikel:artikel_detail' artikel.id %}" 
+                                class="absolute bottom-14 left-1/2 -translate-x-1/2 bg-[#243010]/80 hover:bg-[#87A330]/80 text-white px-6 py-3 rounded-lg text-lg font-semibold text-center shadow-lg transition-all duration-300">
+                                {{ artikel.title }}
+                                </a>
+                            </div>
                         </div>
                     </div>
-                    {% empty %}
-                    <p class="text-gray-500 p-4">Belum ada artikel terbaru.</p>
+                {% empty %}
+                    {% for i in '12345'|make_list %}
+                    <div class="min-w-full relative">
+                        <img src="{% static 'images/default/artikel' %}{{ i }}.jpg"
+                             alt="Artikel Default {{ i }}"
+                             class="w-full h-80 object-cover rounded-xl">
+                        <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-[#243010]/80 to-transparent p-6 text-white rounded-b-xl">
+                            <h3 class="font-bold text-xl">Artikel Hot {{ i }}</h3>
+                        </div>
+                    </div>
                     {% endfor %}
-                </div>
+                {% endfor %}
             </div>
-        </section>
 
-        <!-- Rekomendasi untuk Anda -->
-        <section class="col-span-2">
-            <h2 class="text-lg font-semibold mb-3">📚 Rekomendasi untuk Anda</h2>
-            {% for artikel in recommended_artikels %}
-            <div class="flex items-center mb-4 bg-white p-3 rounded-lg shadow hover:shadow-md">
-                <img src="{{ artikel.image.url }}" alt="{{ artikel.title }}" class="w-24 h-24 object-cover rounded-lg mr-4">
-                <div>
-                    <a href="{% url 'artikel:artikel_detail' artikel.id %}" class="text-md font-semibold text-blue-600 hover:underline">
-                        {{ artikel.title }}
-                    </a>
-                    <p class="text-gray-500 text-sm truncate">{{ artikel.description|truncatechars:100 }}</p>
-                </div>
+            <!-- Statis bar di bawah -->
+            <div class="absolute bottom-0 left-0 right-0 bg-[#243010] text-white text-center py-3 rounded-b-xl font-semibold">
+                Artikel Hot
             </div>
-            {% empty %}
-            <p class="text-gray-500">Belum ada artikel tersedia.</p>
-            {% endfor %}
-        </section>
 
-        <!-- Artikel Terpopuler -->
-        <aside class="col-span-1">
-            <h2 class="text-lg font-semibold mb-3">🔥 Artikel Terpopuler</h2>
-            <ul class="bg-white p-3 rounded-lg shadow">
-                {% for artikel in popular_artikels %}
+            <!-- Tombol panah kiri -->
+            <button id="prev" 
+                    class="absolute left-4 top-1/2 -translate-y-1/2 focus:outline-none transition">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                stroke-width="2" stroke="#243010" class="w-10 h-10 hover:stroke-[#87A330] drop-shadow-md transition">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                    d="m11.25 9-3 3m0 0 3 3m-3-3h7.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+            </svg>
+            </button>
+
+            <!-- Tombol panah kanan -->
+            <button id="next" 
+                    class="absolute right-4 top-1/2 -translate-y-1/2 focus:outline-none transition">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                stroke-width="2" stroke="#243010" class="w-10 h-10 hover:stroke-[#87A330] drop-shadow-md transition">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                    d="m12.75 15 3-3m0 0-3-3m3 3h-7.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+            </svg>
+            </button>
+        </div>
+    </section>
+
+    <!-- 📚 Rekomendasi -->
+    <section class="col-span-2">
+    <div class="flex items-center justify-between mb-4">
+        <h2 class="text-xl font-semibold text-[#243010] border-l-4 border-[#A1C349] pl-3">
+            📚 Rekomendasi untuk Anda
+        </h2>
+        <!-- Tombol refresh -->
+        <button id="refresh-reco" class="text-[#243010] hover:text-[#87A330] transition" title="Refresh rekomendasi">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99" />
+            </svg>
+        </button>
+    </div>
+
+    <div id="recommendation-list">
+        {% for artikel in recommended_artikels %}
+        <a href="{% url 'artikel:artikel_detail' artikel.id %}" 
+           class="flex items-center mb-4 bg-[#F9FAF5] border-l-4 border-[#A1C349] p-3 rounded-lg shadow hover:shadow-lg transition">
+            <img src="{{ artikel.image }}" alt="{{ artikel.title }}" 
+                 class="w-20 h-20 object-cover rounded-lg mr-4">
+            <h3 class="text-lg font-semibold text-[#243010] hover:text-[#87A330]">{{ artikel.title }}</h3>
+        </a>
+        {% empty %}
+        <p class="text-gray-600 italic">Belum ada artikel rekomendasi.</p>
+        {% endfor %}
+    </div>
+</section>
+
+    <!-- 🔥 Artikel Populer -->
+    <aside class="col-span-1">
+        <h2 class="text-xl font-semibold mb-4 text-[#243010] border-l-4 border-[#87A330] pl-3">
+            🔥 Artikel Terpopuler
+        </h2>
+        <ul class="bg-[#F9FAF5] p-4 rounded-lg shadow-md">
+            {% for artikel in popular_artikels %}
                 <li class="mb-2 flex items-start">
-                    <span class="font-bold text-green-600 mr-2">{{ forloop.counter }}.</span>
-                    <a href="{% url 'artikel:artikel_detail' artikel.id %}" class="text-blue-600 hover:underline">
-                        {{ artikel.title }}
+                    <span class="font-bold text-[#87A330] mr-2">{{ forloop.counter }}.</span>
+                    <a href="{% url 'artikel:artikel_detail' artikel.id %}" 
+                       class="text-[#243010] hover:text-[#A1C349]">
+                       {{ artikel.title }}
                     </a>
                 </li>
-                {% empty %}
-                <p class="text-gray-500">Belum ada artikel populer.</p>
+            {% empty %}
+                {% for i in '123456789'|make_list %}
+                <li class="mb-2 flex items-start">
+                    <span class="font-bold text-[#87A330] mr-2">{{ i }}.</span>
+                    <span class="text-[#243010]">Artikel Populer Default {{ i }}</span>
+                </li>
                 {% endfor %}
-            </ul>
-        </aside>
+            {% endfor %}
+        </ul>
+    </aside>
+</main>
 
-    </main>
+<footer class="text-center text-[#F9FAF5] bg-[#243010] mt-10 py-4 text-sm">
+    © 2025 GunDex — Jelajahi Gunung, Rasakan Alam 🌄
+</footer>
 
-    <!-- Tombol Create (Hanya Admin) -->
-    {% if user.is_staff or user.is_superuser %}
-    <div class="fixed bottom-6 right-6">
-        <a href="{% url 'artikel:create_artikel' %}" class="bg-green-600 text-white px-4 py-2 rounded-full shadow hover:bg-green-700">
-            + Buat Artikel
-        </a>
-    </div>
-    {% endif %}
+<script>
 
-    <!-- Footer -->
-    <footer class="text-center text-gray-500 text-sm py-4 mt-10">
-        © 2025 GunDex — Platform Pendakian Indonesia
-    </footer>
+const carouselInner = document.getElementById('carousel-inner');
+let slides = Array.from(document.querySelectorAll('#carousel-inner > div'));
+let currentIndex = 1;
+let isTransitioning = false;
+
+// Clone pertama & terakhir (buat looping halus)
+const firstClone = slides[0].cloneNode(true);
+const lastClone = slides[slides.length - 1].cloneNode(true);
+carouselInner.appendChild(firstClone);
+carouselInner.insertBefore(lastClone, slides[0]);
+
+// Update list slides
+slides = Array.from(document.querySelectorAll('#carousel-inner > div'));
+const totalSlides = slides.length;
+
+// Set posisi awal (slide ke-1 yang asli)
+carouselInner.style.transform = `translateX(-${currentIndex * 100}%)`;
+
+function moveToSlide() {
+  if (isTransitioning) return;
+  isTransitioning = true;
+  carouselInner.style.transition = 'transform 0.7s ease-in-out';
+  carouselInner.style.transform = `translateX(-${currentIndex * 100}%)`;
+}
+
+// Transisi halus balik ke awal/akhir
+carouselInner.addEventListener('transitionend', () => {
+  isTransitioning = false;
+  const currentSlide = slides[currentIndex];
+  if (currentSlide === firstClone) {
+    carouselInner.style.transition = 'none';
+    currentIndex = 1;
+    carouselInner.style.transform = `translateX(-${currentIndex * 100}%)`;
+  } else if (currentSlide === lastClone) {
+    carouselInner.style.transition = 'none';
+    currentIndex = slides.length - 2;
+    carouselInner.style.transform = `translateX(-${currentIndex * 100}%)`;
+  }
+});
+
+// Tombol navigasi
+document.getElementById('next').addEventListener('click', () => {
+  if (currentIndex >= slides.length - 1) return;
+  currentIndex++;
+  moveToSlide();
+});
+
+document.getElementById('prev').addEventListener('click', () => {
+  if (currentIndex <= 0) return;
+  currentIndex--;
+  moveToSlide();
+});
+
+// Auto-slide tiap 8 detik
+setInterval(() => {
+  currentIndex++;
+  moveToSlide();
+}, 15000);
+
+// 🔄 Refresh rekomendasi (AJAX)
+const refreshButton = document.getElementById("refresh-reco");
+const recoContainer = document.getElementById("recommendation-list");
+
+refreshButton.addEventListener("click", async () => {
+    refreshButton.classList.add("animate-spin");
+    try {
+        const response = await fetch("{% url 'artikel:refresh_recommendations' %}");
+        const data = await response.json();
+
+        let newHTML = "";
+        data.artikels.forEach(a => {
+            newHTML += `
+            <a href="/artikel/${a.id}/" 
+               class="flex items-center mb-4 bg-[#F9FAF5] border-l-4 border-[#A1C349] p-3 rounded-lg shadow hover:shadow-lg transition">
+                <img src="${a.image}" alt="${a.title}" 
+                     class="w-20 h-20 object-cover rounded-lg mr-4">
+                <h3 class="text-lg font-semibold text-[#243010] hover:text-[#87A330]">${a.title}</h3>
+            </a>`;
+        });
+        recoContainer.innerHTML = newHTML;
+    } catch (err) {
+        console.error("Gagal refresh rekomendasi:", err);
+    } finally {
+        setTimeout(() => refreshButton.classList.remove("animate-spin"), 600);
+    }
+});
+
+</script>
 </body>
-</html>
+{% endblock content %}
+
+

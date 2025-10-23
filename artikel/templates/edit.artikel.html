@@ -1,0 +1,44 @@
+<div id="editModal" class="fixed inset-0 bg-black/40 flex justify-center items-center z-50 hidden">
+  <div class="bg-[#F9FAF5] rounded-2xl shadow-xl w-3/4 md:w-2/3 p-8 relative">
+    <h2 class="text-2xl font-bold mb-4 text-[#243010]">✏️ Edit Artikel</h2>
+
+    <form id="editForm" enctype="multipart/form-data">
+      {% csrf_token %}
+      <input type="text" name="title" value="{{ artikel.title }}" 
+             class="w-full mb-4 p-2 border rounded-lg" placeholder="Judul">
+      <textarea name="description" rows="6" 
+                class="w-full p-2 border rounded-lg mb-4">{{ artikel.description }}</textarea>
+      <input type="file" name="image" class="mb-4">
+
+      <div class="flex justify-end space-x-3">
+        <button type="button" id="cancelBtn" 
+                class="bg-gray-400 text-white px-4 py-2 rounded-lg hover:bg-gray-500">Batal</button>
+        <button type="submit" 
+                class="bg-[#87A330] text-white px-4 py-2 rounded-lg hover:bg-[#A1C349]">Simpan</button>
+      </div>
+    </form>
+
+    <button id="closeIcon" class="absolute top-3 right-4 text-gray-600 text-xl hover:text-[#87A330]">✕</button>
+  </div>
+</div>
+
+<script>
+document.getElementById("cancelBtn").onclick = () => document.getElementById("editModal").remove();
+document.getElementById("closeIcon").onclick = () => document.getElementById("editModal").remove();
+
+document.getElementById("editForm").onsubmit = async (e) => {
+  e.preventDefault();
+  const formData = new FormData(e.target);
+  const resp = await fetch(`/artikel/edit-artikel-ajax/{{ artikel.id }}/`, {
+    method: "POST",
+    body: formData,
+  });
+  const data = await resp.json();
+  if (data.status === "success") {
+    alert("Artikel berhasil diperbarui!");
+    location.reload();
+  } else {
+    alert("Gagal memperbarui artikel!");
+  }
+};
+</script>

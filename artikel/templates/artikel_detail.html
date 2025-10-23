@@ -1,71 +1,98 @@
 {% extends 'base.html' %}
 {% load static %}
 
+{% block meta %}
+<title>GunDex — {{ artikel.title }}</title>
+<link rel="stylesheet" href="{% static 'css/article.css' %}">
+{% endblock meta %}
+
 {% block content %}
-<div class="max-w-5xl mx-auto mt-10 px-6 py-8 bg-white rounded-2xl shadow-md">
-  <!-- Breadcrumb -->
-  <nav class="text-sm mb-4 text-gray-500">
-    <a href="{% url 'artikel:show_artikel' %}" class="hover:text-green-600">← Kembali ke Artikel</a>
-  </nav>
+{% include 'navbar.html' %}
 
-  <!-- Judul Artikel -->
-  <h1 class="text-3xl font-extrabold text-gray-900 mb-3 leading-tight">
-    {{ artikel.title }}
-  </h1>
-
-  <!-- Meta Info -->
-  <div class="flex flex-wrap items-center text-sm text-gray-500 mb-6">
-    <span class="mr-4">📅 {{ artikel.created_at|date:"d M Y" }}</span>
-    <span class="mr-4">✍️ {{ artikel.user.username|default:"Anonim" }}</span>
-    <span>👁️ {{ artikel.views|default:0 }} kali dibaca</span>
-  </div>
-
-  <!-- Gambar Utama -->
-  {% if artikel.image %}
-  <div class="mb-6">
-    <img src="{{ artikel.image.url }}" alt="{{ artikel.title }}"
-      class="w-full h-96 object-cover rounded-lg shadow">
-  </div>
-  {% endif %}
-
-  <!-- Isi Artikel -->
-  <article class="prose prose-lg max-w-none text-gray-800 leading-relaxed">
-    {{ artikel.description|linebreaks }}
-  </article>
-
-  <!-- Garis Pemisah -->
-  <hr class="my-10 border-gray-200">
-
-  <!-- Bagian Navigasi Bawah -->
-  <div class="flex justify-between items-center text-sm text-gray-600">
-    <div class="flex space-x-3">
-      {% if user.is_staff %}
-      <!-- Tombol hanya untuk admin -->
-      <a href="{% url 'artikel:edit_artikel' artikel.id %}"
-        class="px-4 py-2 bg-yellow-400 text-white font-semibold rounded-lg hover:bg-yellow-500 transition">
-        ✏️ Edit Artikel
+<body class="bg-[#CAD593] text-[#243010] font-sans">
+  <main class="max-w-5xl mx-auto mt-8 px-6 py-8 bg-[#F9FAF5] rounded-2xl shadow-lg">
+    <!-- Breadcrumb -->
+    <nav class="text-sm mb-6 text-[#243010]">
+      <a href="{% url 'artikel:show_artikel' %}" class="hover:text-[#87A330] transition-colors duration-300">
+        ← Kembali ke Artikel
       </a>
+    </nav>
 
-      <form method="POST" action="{% url 'artikel:delete_artikel' artikel.id %}"
-        onsubmit="return confirm('Apakah kamu yakin ingin menghapus artikel ini?');">
-        {% csrf_token %}
-        <button type="submit"
-          class="px-4 py-2 bg-red-500 text-white font-semibold rounded-lg hover:bg-red-600 transition">
-          🗑️ Hapus Artikel
-        </button>
-      </form>
-      {% endif %}
+    <!-- Judul Artikel -->
+    <h1 class="text-3xl font-extrabold text-[#243010] mb-4 leading-tight border-l-4 border-[#87A330] pl-4">
+      {{ artikel.title }}
+    </h1>
+
+    <!-- Gambar Utama -->
+    {% if artikel.image %}
+    <div class="mb-8 rounded-xl overflow-hidden shadow-lg">
+      <img src="{{ artikel.image }}" alt="{{ artikel.title }}"
+        class="w-full h-96 object-cover">
     </div>
+    {% endif %}
 
-    <a href="{% url 'artikel:show_artikel' %}" class="text-green-600 font-medium hover:underline">
-      ← Kembali ke daftar artikel
-    </a>
-  </div>
-</div>
+    <!-- Isi Artikel -->
+    <article class="prose prose-lg max-w-none text-[#243010] leading-relaxed mb-10">
+      {{ artikel.description|linebreaks }}
+    </article>
 
-<!-- Footer -->
-<footer class="mt-16 text-center text-gray-500 text-sm">
-  <p>© 2025 GunDex — Platform Pendakian Indonesia</p>
-</footer>
+    <!-- Garis Pemisah -->
+    <hr class="my-10 border-[#A1C349]">
 
+    <!-- Bagian Navigasi Bawah -->
+    <div class="flex justify-between items-center text-sm text-[#243010]">
+      <div class="flex space-x-3">
+        {% if is_admin %}
+        <div class="flex gap-3 mt-6">
+          <button id="editBtn" 
+                  class="px-4 py-2 bg-[#A1C349] text-[#243010] font-semibold rounded-lg hover:bg-[#87A330]">
+            ✏️ Edit Artikel
+          </button>
+          <button id="deleteBtn" 
+                  class="px-4 py-2 bg-[#D9534F] text-white font-semibold rounded-lg hover:bg-[#C9302C]">
+            🗑️ Hapus
+          </button>
+        </div>
+        {% endif %}
+
+        <script>
+        const artikelID = "{{ artikel.id }}";
+
+        document.getElementById("editBtn")?.addEventListener("click", () => {
+          fetch(`/artikel/edit-artikel-modal/${artikelID}/`)
+            .then(resp => resp.text())
+            .then(html => {
+              document.body.insertAdjacentHTML("beforeend", html);
+              document.getElementById("editModal").classList.remove("hidden");
+            });
+        });
+
+        document.getElementById("deleteBtn")?.addEventListener("click", async () => {
+          if (!confirm("Yakin ingin menghapus artikel ini?")) return;
+          const res = await fetch(`/artikel/delete-artikel-ajax/${artikelID}/`, {
+            method: "POST",
+            headers: { "X-CSRFToken": "{{ csrf_token }}" },
+          });
+          const data = await res.json();
+          if (data.status === "success") {
+            alert("Artikel berhasil dihapus!");
+            window.location.href = "{% url 'artikel:show_artikel' %}";
+          } else {
+            alert("Gagal menghapus artikel!");
+          }
+        });
+        </script>
+
+      <a href="{% url 'artikel:show_artikel' %}" 
+         class="text-[#87A330] font-medium hover:text-[#A1C349] transition-colors duration-300">
+        ← Kembali ke daftar artikel
+      </a>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="mt-16 text-center text-[#F9FAF5] bg-[#243010] py-4 text-sm">
+    © 2025 GunDex — Jelajahi Gunung, Rasakan Alam 🌄
+  </footer>
+</body>
 {% endblock %}
