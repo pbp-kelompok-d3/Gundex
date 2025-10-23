@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block meta %}
+{{ block.super }}
+<title>{{ gunung.nama }} - Gundex</title>
+{% endblock meta %}
+
+{% block content %}
+<div class="bg-gray-50 w-full min-h-screen pt-16">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        
+        <!-- Back Navigation -->
+        <div class="mb-6">
+            <a href="{% url 'main:show_main' %}" class="text-gray-600 hover:text-gray-900 font-medium transition-colors">
+                ← Back to Explore
+            </a>
+        </div>
+        
+        <!-- Article -->
+        <article class="bg-white rounded-lg border border-gray-200 overflow-hidden shadow-sm">
+            
+            <!-- Featured Image -->
+            {% if gunung.foto %}
+                <div class="w-full">
+                    <img 
+                        src="{{ gunung.foto }}" 
+                        alt="{{ gunung.nama }}" 
+                        class="w-full h-56 sm:h-72 md:h-80 lg:h-96 object-cover"
+                    >
+                </div>
+            {% endif %}
+            
+            <!-- Header & Content -->
+            <div class="px-5 sm:px-8 py-6 sm:py-8">
+                <!-- Tags -->
+                <div class="flex flex-wrap items-center gap-2 mb-4">
+                    <span class="inline-flex items-center px-3 py-1 rounded-md text-xs sm:text-sm font-medium bg-green-900 text-white">
+                        {{ gunung.provinsi }}
+                    </span>
+                    <span class="inline-flex items-center px-3 py-1 rounded-md text-xs sm:text-sm font-medium bg-green-900 text-white">
+                        {{ gunung.ketinggian }} mdpl
+                    </span>
+                </div>
+
+                <!-- Title -->
+                <h1 class="text-2xl sm:text-3xl md:text-4xl font-bold text-green-950 leading-tight mb-3">
+                    {{ gunung.nama }}
+                </h1>
+
+                <!-- Description -->
+                <p class="text-gray-700 leading-relaxed text-base sm:text-lg md:text-xl">
+                    {{ gunung.deksripsi }}
+                </p>
+            </div>
+
+        </article>
+    </div>
+</div>
+{% endblock content %}

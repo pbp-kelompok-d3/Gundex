@@ -22,4 +22,6 @@ urlpatterns = [
     path('', include('main.urls')),
     path('artikel/', include('artikel.urls')),
     path('wishlist/', include('wishlist.urls')),
+    path('', include('explore_gunung.urls')),
+    path('userprofile/', include('userprofile.urls')),
 ]
