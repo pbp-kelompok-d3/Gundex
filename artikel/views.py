@@ -11,8 +11,7 @@ from django.core.files.storage import default_storage
 from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required, user_passes_test
 # Create your views here.
-def is_admin(user):
-    return user.is_staff or user.is_superuser
+
 
 def show_artikel(request):
     latest_artikels = Artikel.objects.order_by('-created_at')[:7]

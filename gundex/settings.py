@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'main',
     'userprofile',
+    'artikel',
 ]
 
 AUTH_USER_MODEL = 'userprofile.UserProfile'
