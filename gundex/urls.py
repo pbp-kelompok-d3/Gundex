@@ -22,4 +22,5 @@ urlpatterns = [
     path('', include('main.urls')),
     path('artikel/', include('artikel.urls')),
     path("log/", include("logpendakian.urls")),
+    path('userprofile/', include('userprofile.urls')),
 ]
