@@ -5,13 +5,18 @@ from django.db.models import Q, F
 
 class LogPendakian(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
         related_name="logs_pendakian",
+        null=True, blank=True,
+    )  
+    gunung = models.ForeignKey(
+        "explore_gunung.Gunung",
+        on_delete=models.PROTECT,
+        related_name="logs",
     )
-    mountain_name = models.CharField(max_length=200, db_index=True)
+
     start_date = models.DateField()
     end_date = models.DateField(null=True, blank=True)
     notes = models.TextField(blank=True)
@@ -26,7 +31,7 @@ class LogPendakian(models.Model):
         ordering = ["-start_date", "-created_at"]
         indexes = [
             models.Index(fields=["user", "start_date"]),
-            models.Index(fields=["mountain_name"]),
+            models.Index(fields=["gunung"]),
         ]
         constraints = [
             models.CheckConstraint(
@@ -38,17 +43,27 @@ class LogPendakian(models.Model):
                 name="rating_1_5_or_null",
             ),
             models.UniqueConstraint(
-                fields=["user", "mountain_name", "start_date"],
-                name="uniq_user_mountain_start",
+                fields=["user", "gunung", "start_date"],
+                name="uniq_user_gunung_start",
             ),
         ]
 
     def __str__(self):
-        end = self.end_date or "ongoing"
-        return f"{self.user} — {self.mountain_name} ({self.start_date}→{end})"
+        gunung_name = getattr(self.gunung, "nama", "(tanpa nama)")
+        prof = getattr(self, "user", None)  # ini UserProfile
+        if prof and getattr(prof, "display_name", None):
+            user_name = prof.display_name
+        elif prof and getattr(prof, "user", None):
+            u = prof.user
+            user_name = (getattr(u, "get_full_name", lambda: "")() or getattr(u, "username", "(anonim)"))
+        else:
+            user_name = "(anonim)"
+        return f"{user_name} mendaki {gunung_name}"
 
     @property
     def duration_days(self):
         if self.end_date:
             return (self.end_date - self.start_date).days + 1
         return None
+    
+    

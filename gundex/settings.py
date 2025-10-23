@@ -42,22 +42,24 @@ ALLOWED_HOSTS = ["localhost", "127.0.0.1", "rasyad-zulham-gundex.pbp.cs.ui.ac.id
 # Application definition
 
 INSTALLED_APPS = [
+    'corsheaders',
+    'main',
+    'artikel',
+    'userprofile',
+    'logpendakian',
+    'explore_gunung',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'main',
-    'artikel',
-    'logpendakian',
-    'explore_gunung',
-    'userprofile',
 ]
 
 AUTH_USER_MODEL = 'userprofile.UserProfile'
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',

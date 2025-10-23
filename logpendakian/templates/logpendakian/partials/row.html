@@ -1,0 +1,24 @@
+{% load static %}
+
+{% static 'images/HikingImage.png' as PH %}
+{% firstof x.gunung.foto PH as img_url %}  {# pakai URL langsung dari field foto #}
+
+<li id="lp-item-{{ x.id }}" class="lp-card" data-id="{{ x.id }}">
+  <img class="lp-card__img" src="{{ img_url }}" alt="{{ x.gunung.nama|default:'Gunung' }}">
+  <div class="lp-card__body">
+    <div class="lp-card__title">
+      {{ x.gunung.nama }} •
+      {{ x.start_date|date:"M. j, Y" }} → {{ x.end_date|date:"M. j, Y" }}
+    </div>
+    <div class="lp-card__meta">
+      {% if x.summit_reached %}Tercapai Puncak{% else %}Belum sampai puncak{% endif %}
+      {% if x.team_size %} • {{ x.team_size }} orang{% endif %}
+      {% if x.rating %} • ⭐ {{ x.rating }}/5{% endif %}
+    </div>
+    {% if x.notes %}<div class="lp-card__notes">{{ x.notes|linebreaksbr }}</div>{% endif %}
+    <div class="lp-item__actions">
+      <button type="button" class="lp-action lp-btn--link" data-action="edit" data-id="{{ x.id }}">Edit</button>
+      <button type="button" class="lp-action lp-btn--link" data-action="delete" data-id="{{ x.id }}">Hapus</button>
+    </div>
+  </div>
+</li>
