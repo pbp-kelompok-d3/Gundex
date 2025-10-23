@@ -6,23 +6,31 @@ from django.views.decorators.csrf import csrf_exempt
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 import random as py_random
-
+from django.views.decorators.http import require_POST
+from django.db import models
 
 # =========================================================
 # 🔹 HALAMAN UTAMA ARTIKEL
 # =========================================================
 def show_artikel(request):
-    latest_artikels = Artikel.objects.order_by('-created_at')[:5]  # artikel hot
-    popular_artikels = Artikel.objects.order_by('-views')[:9]      # artikel populer
+    latest_artikels = Artikel.objects.order_by('-created_at')[:5]
+    popular_artikels = Artikel.objects.order_by('-views')[:9]
+    hottest_artikels = Artikel.objects.annotate(like_count=models.Count('likes')).order_by('-like_count', '-created_at')[:5]
     recommended_artikels = list(Artikel.objects.all())
     py_random.shuffle(recommended_artikels)
-    recommended_artikels = recommended_artikels[:6]                # rekomendasi acak
+    recommended_artikels = recommended_artikels[:7]
 
+    is_admin = False
+    if request.user.is_authenticated:
+        # cek jika pakai userprofile atau fallback ke is_staff bawaan
+        if hasattr(request.user, 'is_admin'):
+            is_admin = request.user.is_admin
     return render(request, 'full_artikel.html', {
         'latest_artikels': latest_artikels,
         'recommended_artikels': recommended_artikels,
         'popular_artikels': popular_artikels,
-        'is_admin': getattr(request.user, "is_admin", False),
+        'hottest_artikels': hottest_artikels,
+        'is_admin': is_admin,
     })
 
 
@@ -64,7 +72,7 @@ def create_artikel(request):
     try:
         title = request.POST.get("title", "")
         description = request.POST.get("description", "")
-        image = request.FILES.get("image")
+        image = request.POST.get("image")
 
         if not title or not description:
             return JsonResponse({
@@ -97,49 +105,26 @@ def create_artikel(request):
 @login_required
 @csrf_exempt
 def edit_artikel(request, id):
-    if not request.user.is_admin:
+    if not getattr(request.user, 'is_admin', False):
         return HttpResponseForbidden("Kamu tidak memiliki izin untuk mengedit artikel ini.")
 
     artikel = get_object_or_404(Artikel, pk=id)
 
-    # Jika AJAX POST
     if request.method == "POST" and request.headers.get('x-requested-with') == 'XMLHttpRequest':
         title = request.POST.get('title', '').strip()
         description = request.POST.get('description', '').strip()
-        image = request.FILES.get('image')
+        image = request.POST.get('image', '').strip()  # URL gambar
 
         if not title or not description:
-            return JsonResponse({
-                'status': 'error',
-                'message': 'Semua field wajib diisi.'
-            }, status=400)
+            return JsonResponse({'status': 'error', 'message': 'Judul dan deskripsi wajib diisi.'}, status=400)
 
         artikel.title = title
         artikel.description = description
-        if image:
-            artikel.image = image
+        artikel.image = image
         artikel.save()
-
         return JsonResponse({'status': 'success', 'message': 'Artikel berhasil diperbarui!'})
 
-    # Jika request biasa (non-AJAX)
-    elif request.method == "POST":
-        title = request.POST.get('title', '')
-        description = request.POST.get('description', '')
-        image = request.FILES.get('image')
-
-        if not title or not description:
-            messages.error(request, 'Semua field wajib diisi.')
-        else:
-            artikel.title = title
-            artikel.description = description
-            if image:
-                artikel.image = image
-            artikel.save()
-            messages.success(request, 'Artikel berhasil diperbarui.')
-            return redirect('artikel:show_artikel')
-
-    return render(request, 'edit_artikel.html', {'artikel': artikel})
+    return JsonResponse({'status': 'error', 'message': 'Gunakan AJAX POST untuk mengedit.'}, status=405)
 
 
 # =========================================================
@@ -179,7 +164,7 @@ def edit_artikel_modal(request, id):
     if not request.user.is_admin:
         return HttpResponseForbidden("Kamu bukan admin.")
     artikel = get_object_or_404(Artikel, pk=id)
-    return render(request, "artikel/edit_artikel.html", {"artikel": artikel})
+    return render(request, "edit_artikel.html", {"artikel": artikel})
 
 
 # =========================================================
@@ -201,3 +186,23 @@ def get_random_recommendations(request):
         ]
         return JsonResponse({"artikels": data})
     return JsonResponse({"error": "Gunakan method GET"}, status=405)
+
+@login_required
+@require_POST
+@csrf_exempt
+def like_artikel(request, id):
+    artikel = get_object_or_404(Artikel, pk=id)
+    user = request.user
+
+    if artikel.likes.filter(id=user.id).exists():
+        artikel.likes.remove(user)
+        liked = False
+    else:
+        artikel.likes.add(user)
+        liked = True
+
+    return JsonResponse({
+        "status": "success",
+        "liked": liked,
+        "total_likes": artikel.total_likes()
+    })

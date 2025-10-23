@@ -14,5 +14,72 @@
 <body>
     {% include 'navbar.html' %}
     {% block content %} {% endblock content %}
+    {% include 'footer.html' %}
+    <div id="toast-container" class="fixed top-5 right-5 z-[9999] space-y-2"></div>
+
+  <script>
+  function showToast(message, type="success") {
+    const container = document.getElementById("toast-container");
+    const toast = document.createElement("div");
+
+    // warna & ikon berdasarkan tipe
+    const color = type === "error" ? "bg-red-600" : "bg-[#87A330]";
+    const icon = type === "error" ? "❌" : "✅";
+
+    toast.className =
+      `${color} text-white flex items-center gap-2 px-4 py-3 rounded-lg shadow-lg opacity-0 translate-x-4 transition-all duration-300`;
+    toast.innerHTML = `<span>${icon}</span><span>${message}</span>`;
+
+    container.appendChild(toast);
+
+    // animasi muncul
+    requestAnimationFrame(() => {
+      toast.classList.remove("opacity-0", "translate-x-4");
+      toast.classList.add("opacity-100", "translate-x-0");
+    });
+
+    // hilang otomatis setelah 3 detik
+    setTimeout(() => {
+      toast.classList.add("opacity-0", "translate-x-4");
+      setTimeout(() => toast.remove(), 300);
+    }, 3000);
+  }
+  
+  document.addEventListener("click", async function(e) {
+  if (e.target && (e.target.id === "logout-btn" || e.target.id === "logout-btn-mobile")) {
+    e.preventDefault();
+    console.log("Logout click detected!");
+
+    const csrfToken =
+      document.querySelector("[name=csrfmiddlewaretoken]")?.value ||
+      document.querySelector('meta[name="csrf-token"]')?.content ||
+      "";
+
+    try {
+      const res = await fetch("{% url 'userprofile:logout' %}", {
+        method: "POST",
+        headers: {
+          "X-CSRFToken": csrfToken,
+          "X-Requested-With": "XMLHttpRequest"
+        },
+      });
+
+      const data = await res.json();
+      console.log("Logout response:", data);
+      if (data.success) {
+        // ✅ tunggu sedikit biar fetch gak ke-cancel
+        setTimeout(() => {
+          window.location.href = data.redirect_url;
+        }, 200);
+      } else {
+        alert("Logout gagal!");
+      }
+    } catch (err) {
+      console.error("Logout error:", err);
+      window.location.href = "{% url 'userprofile:login' %}";
+    }
+  }
+});
+  </script>
 </body>
 </html>

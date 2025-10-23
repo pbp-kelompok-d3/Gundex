@@ -13,7 +13,9 @@ urlpatterns = [
     path('edit-artikel/<uuid:id>/', edit_artikel, name='edit_artikel'),
     path('delete-artikel/<uuid:id>/', delete_artikel, name='delete_artikel'),
     path("refresh-recommendations/", get_random_recommendations, name="refresh_recommendations"),
-    path("edit-artikel-modal/<uuid:id>/", edit_artikel_modal, name="edit_artikel_modal"),
+    path('edit-artikel-modal/<uuid:id>/', edit_artikel_modal, name='edit_artikel_modal'),
+    path('like-artikel/<uuid:id>/', views.like_artikel, name='like_artikel'),
+    path("get-random-recommendations/", views.get_random_recommendations, name="get_random_recommendations"),
 ]
 
 if settings.DEBUG:

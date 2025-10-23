@@ -109,34 +109,103 @@
 </section>
 
     <!-- 🔥 Artikel Populer -->
-    <aside class="col-span-1">
-        <h2 class="text-xl font-semibold mb-4 text-[#243010] border-l-4 border-[#87A330] pl-3">
-            🔥 Artikel Terpopuler
-        </h2>
-        <ul class="bg-[#F9FAF5] p-4 rounded-lg shadow-md">
-            {% for artikel in popular_artikels %}
-                <li class="mb-2 flex items-start">
-                    <span class="font-bold text-[#87A330] mr-2">{{ forloop.counter }}.</span>
-                    <a href="{% url 'artikel:artikel_detail' artikel.id %}" 
-                       class="text-[#243010] hover:text-[#A1C349]">
-                       {{ artikel.title }}
-                    </a>
-                </li>
-            {% empty %}
-                {% for i in '123456789'|make_list %}
-                <li class="mb-2 flex items-start">
-                    <span class="font-bold text-[#87A330] mr-2">{{ i }}.</span>
-                    <span class="text-[#243010]">Artikel Populer Default {{ i }}</span>
-                </li>
-                {% endfor %}
-            {% endfor %}
-        </ul>
-    </aside>
+   <aside class="col-span-1 flex flex-col gap-8">
+
+  <!-- Artikel Populer -->
+  <div>
+    <h2 class="text-xl font-semibold mb-4 text-[#243010] border-l-4 border-[#87A330] pl-3">
+      🔥 Artikel Terpopuler
+    </h2>
+    <ul class="bg-[#F9FAF5] p-4 rounded-lg shadow-md">
+      {% for artikel in popular_artikels %}
+      <li class="mb-2 flex items-start">
+        <span class="font-bold text-[#87A330] mr-2">{{ forloop.counter }}.</span>
+        <a href="{% url 'artikel:artikel_detail' artikel.id %}" class="text-[#243010] hover:text-[#A1C349]">
+          {{ artikel.title }}
+        </a>
+      </li>
+      {% empty %}
+      {% for i in '123456789'|make_list %}
+      <li class="mb-2 flex items-start">
+        <span class="font-bold text-[#87A330] mr-2">{{ i }}.</span>
+        <span class="text-[#243010]">Artikel Populer Default {{ i }}</span>
+      </li>
+      {% endfor %}
+      {% endfor %}
+    </ul>
+  </div>
+
+  <!-- Artikel Terhangat -->
+  <div>
+    <h2 class="text-xl font-semibold mb-4 text-[#243010] border-l-4 border-[#A1C349] pl-3">
+      💖 Artikel Terhangat
+    </h2>
+    <ul class="bg-[#F9FAF5] p-4 rounded-lg shadow-md">
+      {% for artikel in hottest_artikels %}
+      <li class="mb-2 flex items-start">
+        <span class="font-bold text-[#A1C349] mr-2">{{ forloop.counter }}.</span>
+        <a href="{% url 'artikel:artikel_detail' artikel.id %}" class="text-[#243010] hover:text-[#87A330]">
+          {{ artikel.title }}
+        </a>
+      </li>
+      {% empty %}
+      <li class="text-gray-600 italic">Belum ada artikel yang disukai.</li>
+      {% endfor %}
+    </ul>
+  </div>
+
+</aside>
+
+    {% if is_admin %}
+    <div class="fixed bottom-8 right-8">
+        <a href="{% url 'artikel:create_artikel' %}"
+        class="flex items-center gap-2 bg-green-700 hover:bg-green-800 text-white font-semibold py-3 px-5 rounded-full shadow-lg transition-all duration-300 ease-in-out">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+            stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m6-6H6" />
+        </svg>
+        Buat Artikel
+        </a>
+    </div>
+    {% endif %}
 </main>
 
-<footer class="text-center text-[#F9FAF5] bg-[#243010] mt-10 py-4 text-sm">
-    © 2025 GunDex — Jelajahi Gunung, Rasakan Alam 🌄
-</footer>
+<div id="createModal" class="fixed inset-0 bg-black/40 hidden justify-center items-center z-50">
+  <div class="bg-[#F9FAF5] rounded-2xl shadow-xl w-3/4 md:w-2/3 p-8 relative">
+    <h2 class="text-2xl font-bold mb-4 text-[#243010]">📝 Buat Artikel Baru</h2>
+
+    <form id="createForm">
+      {% csrf_token %}
+      <input type="text" name="title" placeholder="Judul Artikel"
+             class="w-full mb-4 p-2 border rounded-lg" required>
+
+      <textarea name="description" rows="6" placeholder="Deskripsi Artikel"
+                class="w-full p-2 border rounded-lg mb-4" required></textarea>
+
+      <!-- URL input -->
+      <input type="url" name="image" id="imageURL" 
+             placeholder="Masukkan URL gambar (opsional)"
+             class="w-full mb-4 p-2 border rounded-lg">
+
+      <!-- Preview -->
+      <div id="imagePreview" class="hidden mb-4 text-center">
+        <img src="" alt="Preview Gambar" class="max-h-64 mx-auto rounded-lg shadow-md">
+        <p class="text-sm text-gray-600 mt-2">Pratinjau gambar</p>
+      </div>
+
+      <div class="flex justify-end space-x-3">
+        <button type="button" id="cancelCreate" 
+                class="bg-gray-400 text-white px-4 py-2 rounded-lg hover:bg-gray-500">Batal</button>
+        <button type="submit" 
+                class="bg-[#87A330] text-white px-4 py-2 rounded-lg hover:bg-[#A1C349]">Simpan</button>
+      </div>
+    </form>
+
+    <button id="closeCreate" 
+            class="absolute top-3 right-4 text-gray-600 text-xl hover:text-[#87A330]">✕</button>
+  </div>
+</div>
+
 
 <script>
 
@@ -227,7 +296,79 @@ refreshButton.addEventListener("click", async () => {
     }
 });
 
+const createModal = document.getElementById("createModal");
+const createBtn = document.querySelector(".fixed.bottom-8.right-8 a");
+const cancelCreate = document.getElementById("cancelCreate");
+const closeCreate = document.getElementById("closeCreate");
+const createForm = document.getElementById("createForm");
+const imageInput = document.getElementById("imageURL");
+const imagePreview = document.getElementById("imagePreview");
+const previewImg = imagePreview.querySelector("img");
+
+// 🔹 Buka Modal
+createBtn?.addEventListener("click", (e) => {
+  e.preventDefault();
+  createModal.classList.remove("hidden");
+  createModal.classList.add("flex");
+});
+
+// 🔹 Tutup Modal
+[cancelCreate, closeCreate].forEach(btn => {
+  btn.addEventListener("click", () => createModal.classList.add("hidden"));
+});
+
+// 🔹 Preview gambar otomatis
+imageInput.addEventListener("input", () => {
+  const url = imageInput.value.trim();
+  if (url.startsWith("http://") || url.startsWith("https://")) {
+    previewImg.src = url;
+    previewImg.onload = () => {
+      imagePreview.classList.remove("hidden");
+    };
+    previewImg.onerror = () => {
+      imagePreview.classList.add("hidden");
+    };
+  } else {
+    imagePreview.classList.add("hidden");
+  }
+});
+
+// 🔹 Submit via AJAX (pakai URL gambar)
+createForm?.addEventListener("submit", async (e) => {
+  e.preventDefault();
+
+  const formData = new URLSearchParams();
+  formData.append("title", createForm.title.value.trim());
+  formData.append("description", createForm.description.value.trim());
+  formData.append("image", imageInput.value.trim());
+  formData.append("csrfmiddlewaretoken", "{{ csrf_token }}");
+
+  try {
+    const response = await fetch("{% url 'artikel:create_artikel' %}", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+        "X-Requested-With": "XMLHttpRequest",
+      },
+      body: formData.toString(),
+    });
+
+    const data = await response.json();
+    if (data.status === "success") {
+    showToast("Artikel berhasil dibuat!");
+    setTimeout(() => window.location.reload(), 1200);
+    } else {
+    showToast(data.message || "Gagal membuat artikel.", "error");
+    }
+  } catch (error) {
+    alert("Terjadi kesalahan koneksi.");
+  }
+});
+
+
 </script>
+
+
 </body>
 {% endblock content %}
 
