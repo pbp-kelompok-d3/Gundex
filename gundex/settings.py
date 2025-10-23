@@ -52,11 +52,14 @@ INSTALLED_APPS = [
     'explore_gunung',
     'userprofile',
     'artikel',
+    'logpendakian',
+    'corsheaders',
 ]
 
 AUTH_USER_MODEL = 'userprofile.UserProfile'
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
