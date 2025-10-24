@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<div id="lp-root" class="lp-container" data-create-url="{% url 'logpendakian:create' %}">
+
+  <!-- HERO FOTO -->
+  <section class="lp-hero lp-hero--copy-between"
+          style="--hero-url: url('{% static 'images/HikingImage.png' %}');
+                  --bg-pos: 34% center;">
+    <div class="lp-hero__bg"></div>
+    <div class="lp-hero__copy">
+      <h1 class="lp-hero__brand">
+        <span class="lp-brand-gun">Gun</span><span class="lp-brand-dex">dex</span>
+      </h1>
+      <p class="lp-hero__tag">Hike More<br>and Get More</p>
+    </div>
+    <button id="lp-cta" class="lp-cta lp-cta--hero" type="button">Tambah Pendakian</button>
+  </section>
+
+  <!-- STREAM / RIWAYAT -->
+  <section class="lp-stream lp-stream--framed">
+    <div id="lp-empty" class="lp-empty"{% if logs %} hidden{% endif %}>
+      <img src="{% static 'images/nothinghere.png' %}" alt="Belum ada riwayat">
+      <p>Belum ada riwayat pendakian.</p>
+    </div>
+    <ul id="lp-list" class="lp-list">
+      {% for x in logs %}
+        {% include "logpendakian/partials/row.html" with x=x %}
+      {% endfor %}
+    </ul>
+  </section>
+
+  <!-- FAB -->
+  <button id="lp-fab" class="lp-fab" aria-label="Tambah Pendakian">+</button>
+
+  <!-- Modal AJAX -->
+  <div id="lp-modal" class="lp-modal" hidden>
+    <div class="lp-modal__backdrop" data-close-modal></div>
+    <div class="lp-modal__dialog" role="dialog" aria-modal="true">
+      <div id="lp-modal-body"></div>
+    </div>
+  </div>
+
+  <link rel="stylesheet" href="{% static 'logpendakian/logpendakian.css' %}">
+  <script src="{% static 'logpendakian/logpendakian.js' %}" defer></script>
+</div>
+{% endblock %}
+

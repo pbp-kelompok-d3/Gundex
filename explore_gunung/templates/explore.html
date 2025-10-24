@@ -1,0 +1,436 @@
+{% load static %}
+<div class="container mx-auto px-4 py-10 pt-16">
+
+    <h1 class="text-2xl font-bold mb-2 py-4 px-1">Temukan gunung favoritmu🏔️ — mulai petualangan baru sekarang!</h1>
+    <input type="text" 
+           id="search-input" 
+           placeholder="Cari berdasarkan nama atau provinsi..." 
+           class="w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500"
+           onkeyup="getGunungData()">
+    <div id="gunung-list" class="mt-3 mb-3 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+    <div class="text-center mt-6">
+        <button id="show-more-btn"
+                class="hidden px-6 py-3 bg-[#2a3c24] text-white rounded-lg hover:scale-105 transform overflow-hidden transition duration-300">
+            Show More
+        </button>
+    </div>
+</div>
+
+<!-- Modal Edit -->
+<div id="edit-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+    <div class="bg-white w-full max-w-lg rounded-lg shadow-lg p-6 relative">
+        <h2 class="text-2xl font-semibold mb-4">Edit Gunung</h2>
+        
+        <form id="edit-form" class="space-y-3">
+            <input type="hidden" id="edit-id">
+            
+            <div>
+                <label class="block text-gray-700 font-medium">Nama</label>
+                <input type="text" id="edit-nama" class="w-full p-2 border rounded">
+            </div>
+
+            <div>
+                <label class="block text-gray-700 font-medium">Provinsi</label>
+                <input type="text" id="edit-provinsi" class="w-full p-2 border rounded">
+            </div>
+
+            <div>
+                <label class="block text-gray-700 font-medium">Ketinggian (mdpl)</label>
+                <input type="number" id="edit-ketinggian" class="w-full p-2 border rounded">
+            </div>
+
+            <div>
+                <label class="block text-gray-700 font-medium">Foto (URL)</label>
+                <input type="url" id="edit-foto" class="w-full p-2 border rounded">
+            </div>
+
+            <div>
+                <label class="block text-gray-700 font-medium">Deskripsi</label>
+                <textarea id="edit-deskripsi" rows="3" class="w-full p-2 border rounded"></textarea>
+            </div>
+
+            <div class="flex justify-end gap-2 mt-4">
+                <button type="button" onclick="closeEditModal()" class="px-4 py-2 bg-gray-400 text-white rounded hover:bg-gray-500">Batal</button>
+                <button type="submit" class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">Simpan</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    let currentPage = 1;
+    const limit = 6;
+    let hasMore = true;
+    let isLoading = false;
+    let userWishlist = []; // Menyimpan daftar ID gunung yang ada di wishlist user
+
+    const gunungListDiv = document.getElementById('gunung-list');
+    const searchInput = document.getElementById('search-input');
+    const showMoreBtn = document.getElementById('show-more-btn');
+    const nomountainurl = "{% static 'image/no-mountain.png' %}";
+    const editModal = document.getElementById('edit-modal');
+    const editForm = document.getElementById('edit-form');
+
+    // Fungsi untuk mendapatkan daftar wishlist user
+    function getUserWishlist() {
+        fetch('/wishlist/json/')
+            .then(response => response.json())
+            .then(data => {
+                // Simpan array ID gunung yang ada di wishlist
+                userWishlist = data.map(item => item.gunung_id);
+            })
+            .catch(error => console.error('Error fetching wishlist:', error));
+    }
+
+    // Cek apakah gunung ada di wishlist
+    function isInWishlist(gunungId) {
+        return userWishlist.includes(gunungId);
+    }
+
+    function createGunungCard(gunung, isAdmin, isAuthenticated) {
+        const inWishlist = isInWishlist(gunung.id);
+        
+        let adminButtons = '';
+        if (isAdmin) {
+            adminButtons = `
+                <a href="javascript:void(0)" onclick="openEditModal('${gunung.id}')"
+                   class="px-3 py-1 bg-yellow-500 text-white rounded hover:bg-yellow-600 transition text-sm">
+                    Edit
+                </a>
+                <button onclick="deleteGunung('${gunung.id}')" 
+                        class="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600 transition text-sm">
+                    Delete
+                </button>`;
+        }
+
+        // Tombol wishlist - hanya tampil jika user sudah login
+        let wishlistButton = '';
+        if (isAuthenticated) {
+            wishlistButton = `
+                <button 
+                    onclick="toggleWishlist('${gunung.id}')" 
+                    id="wishlist-btn-${gunung.id}"
+                    class="wishlist-btn ${inWishlist ? 'in-wishlist' : ''} p-2 rounded-full transition-all duration-300 hover:scale-110"
+                    title="${inWishlist ? 'Hapus dari wishlist' : 'Tambah ke wishlist'}">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="${inWishlist ? '#87A330' : 'none'}" viewBox="0 0 24 24" stroke="${inWishlist ? '#87A330' : 'white'}" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                    </svg>
+                </button>`;
+        }
+
+        return `
+            <div class="bg-[#2a3c24] rounded-lg shadow-md hover:shadow-xl hover:-translate-y-1 transform overflow-hidden transition duration-300">
+                <div class="relative">
+                    <img src="${gunung.foto || 'https://via.placeholder.com/400x200?text=No+Image'}" 
+                         alt="${gunung.nama}" 
+                         class="w-full h-48 object-cover">
+                    ${isAuthenticated ? `
+                    <div class="absolute top-3 right-3">
+                        ${wishlistButton}
+                    </div>` : ''}
+                </div>
+                <div class="p-4">
+                    <a href="/gunung/${gunung.id}/" class="text-xl font-semibold text-white hover:text-[#A1C349] transition-colors">
+                        ${gunung.nama}
+                    </a>
+                    <p class="text-sm text-gray-100 mb-2">
+                        ${gunung.provinsi} | ${gunung.ketinggian} mdpl
+                    </p>
+                    <p class="text-[#cad593] line-clamp-3">${gunung.deskripsi}</p>
+                    <div class="flex justify-between items-center mt-4 gap-2">
+                        <a href="/gunung/${gunung.id}/" 
+                           class="text-white hover:text-[#A1C349] font-medium transition-colors">
+                            Detail →
+                        </a>
+                        ${isAdmin ? `<div class="flex gap-2">${adminButtons}</div>` : ''}
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+
+    function getGunungData(isNewSearch = false) {
+        if (isLoading || (!hasMore && !isNewSearch)) return;
+
+        if (isNewSearch) {
+            currentPage = 1;
+            hasMore = true;
+            gunungListDiv.innerHTML = '';
+        }
+
+        isLoading = true;
+
+        const searchQuery = searchInput.value;
+        const url = `/json/?q=${encodeURIComponent(searchQuery)}&page=${currentPage}&limit=${limit}`;
+
+        fetch(url)
+            .then(response => response.json())
+            .then(data => {
+                const isAdmin = data.is_admin;
+                const isAuthenticated = data.is_authenticated;
+                
+                if (data.results.length === 0 && currentPage === 1) {
+                    gunungListDiv.innerHTML = `
+                        <div class="bg-white rounded-lg p-12 text-center col-span-full">
+                            <div class="h-48 mx-auto mb-4">
+                                <img src="${nomountainurl}" alt="No mountain available" class="w-full h-full object-contain">
+                            </div>
+                            <p class="text-gray-600 text-lg">Tidak ada gunung ditemukan</p>
+                        </div>`;
+                    showMoreBtn.classList.add('hidden');
+                } else {
+                    data.results.forEach(gunung => {
+                        gunungListDiv.innerHTML += createGunungCard(gunung, isAdmin, isAuthenticated);
+                    });
+
+                    hasMore = data.has_more;
+                    if (hasMore) {
+                        showMoreBtn.classList.remove('hidden');
+                        currentPage++;
+                    } else {
+                        showMoreBtn.classList.add('hidden');
+                    }
+                }
+
+                isLoading = false;
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                isLoading = false;
+            });
+    }
+
+    // Toggle wishlist (add/remove)
+    function toggleWishlist(gunungId) {
+        const btn = document.getElementById(`wishlist-btn-${gunungId}`);
+        const inWishlist = userWishlist.includes(gunungId);
+
+        if (inWishlist) {
+            // Hapus dari wishlist
+            removeFromWishlist(gunungId, btn);
+        } else {
+            // Tambah ke wishlist
+            addToWishlist(gunungId, btn);
+        }
+    }
+
+    // Tambah ke wishlist
+    function addToWishlist(gunungId, btn) {
+        fetch('/wishlist/add/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCSRFToken(),
+            },
+            body: JSON.stringify({ gunung_id: gunungId })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                // Update UI
+                userWishlist.push(gunungId);
+                updateWishlistButton(btn, true);
+                showNotification(data.message, 'success');
+            } else if (data.status === 'exists') {
+                showNotification(data.message, 'warning');
+            } else {
+                showNotification(data.message, 'error');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showNotification('Gagal menambahkan ke wishlist', 'error');
+        });
+    }
+
+    // Hapus dari wishlist
+    function removeFromWishlist(gunungId, btn) {
+        // Cari item_id dari wishlist
+        fetch('/wishlist/json/')
+            .then(response => response.json())
+            .then(wishlistData => {
+                const item = wishlistData.find(w => w.gunung_id === gunungId);
+                if (item) {
+                    fetch(`/wishlist/remove/${item.id}/`, {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRFToken': getCSRFToken(),
+                        }
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.status === 'success') {
+                            // Update UI
+                            userWishlist = userWishlist.filter(id => id !== gunungId);
+                            updateWishlistButton(btn, false);
+                            showNotification(data.message, 'success');
+                        } else {
+                            showNotification(data.message, 'error');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        showNotification('Gagal menghapus dari wishlist', 'error');
+                    });
+                }
+            });
+    }
+
+    // Update tampilan tombol wishlist
+    function updateWishlistButton(btn, inWishlist) {
+        const svg = btn.querySelector('svg');
+        if (inWishlist) {
+            btn.classList.add('in-wishlist');
+            btn.title = 'Hapus dari wishlist';
+            svg.setAttribute('fill', '#87A330');
+            svg.setAttribute('stroke', '#87A330');
+        } else {
+            btn.classList.remove('in-wishlist');
+            btn.title = 'Tambah ke wishlist';
+            svg.setAttribute('fill', 'none');
+            svg.setAttribute('stroke', 'white');
+        }
+    }
+
+    // Buka modal dan isi data gunung
+    function openEditModal(id) {
+        fetch(`/gunung/${id}/json/`)
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('edit-id').value = data.id;
+                document.getElementById('edit-nama').value = data.nama;
+                document.getElementById('edit-provinsi').value = data.provinsi;
+                document.getElementById('edit-ketinggian').value = data.ketinggian;
+                document.getElementById('edit-deskripsi').value = data.deskripsi;
+                document.getElementById('edit-foto').value = data.foto;
+
+                editModal.classList.remove('hidden');
+                editModal.classList.add('flex');
+            })
+            .catch(error => console.error('Error fetching data:', error));
+    }
+
+    // Tutup modal
+    function closeEditModal() {
+        editModal.classList.add('hidden');
+        editModal.classList.remove('flex');
+    }
+
+    // Fungsi ambil CSRF token dari cookie
+    function getCSRFToken() {
+        const name = 'csrftoken';
+        const cookies = document.cookie.split(';');
+        for (let c of cookies) {
+            const trimmed = c.trim();
+            if (trimmed.startsWith(name + '=')) {
+                return trimmed.substring(name.length + 1);
+            }
+        }
+        return '';
+    }
+
+    function deleteGunung(id) {
+        if (!confirm("Apakah kamu yakin ingin menghapus gunung ini?")) {
+            return;
+        }
+
+        fetch(`/gunung/${id}/delete`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': getCSRFToken(),
+            },
+        })
+        .then(response => {
+            if (response.ok) {
+                showNotification('Gunung berhasil dihapus!', 'success');
+                gunungListDiv.innerHTML = '';
+                currentPage = 1;
+                getGunungData(true);
+            } else {
+                showNotification('Gagal menghapus gunung.', 'error');
+                console.error('Gagal menghapus:', response.statusText);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showNotification('Terjadi kesalahan saat menghapus gunung.', 'error');
+        });
+    }
+
+    // Fungsi notifikasi custom
+    function showNotification(message, type) {
+        const notification = document.createElement('div');
+        let bgColor = 'bg-[#87A330]';
+        if (type === 'error') bgColor = 'bg-red-600';
+        if (type === 'warning') bgColor = 'bg-yellow-500';
+        
+        notification.className = `fixed top-20 right-4 ${bgColor} text-white px-6 py-3 rounded-lg shadow-lg z-50 transition-all duration-300`;
+        notification.textContent = message;
+        
+        document.body.appendChild(notification);
+        
+        setTimeout(() => {
+            notification.style.opacity = '0';
+            setTimeout(() => notification.remove(), 300);
+        }, 3000);
+    }
+
+    // Event: pertama kali load
+    document.addEventListener('DOMContentLoaded', () => {
+        getUserWishlist(); // Load wishlist user dulu
+        setTimeout(() => getGunungData(), 100); // Delay sedikit agar wishlist sudah loaded
+    });
+
+    // Event: tombol "Show More"
+    showMoreBtn.addEventListener('click', () => {
+        getGunungData();
+    });
+
+    // Event: pencarian baru (pakai debounce biar gak spam fetch)
+    let typingTimer;
+    searchInput.addEventListener('keyup', () => {
+        clearTimeout(typingTimer);
+        typingTimer = setTimeout(() => {
+            getGunungData(true);
+        }, 400);
+    });
+
+    // Simpan perubahan edit
+    editForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const id = document.getElementById('edit-id').value;
+
+        const payload = {
+            nama: document.getElementById('edit-nama').value,
+            provinsi: document.getElementById('edit-provinsi').value,
+            ketinggian: document.getElementById('edit-ketinggian').value,
+            deskripsi: document.getElementById('edit-deskripsi').value,
+            foto: document.getElementById('edit-foto').value,
+        };
+
+        fetch(`/gunung/${id}/edit`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCSRFToken(),
+            },
+            body: JSON.stringify(payload),
+        })
+        .then(response => {
+            if (response.ok) {
+                closeEditModal();
+                showNotification('Berhasil mengupdate gunung!', 'success');
+                gunungListDiv.innerHTML = '';
+                currentPage = 1;
+                getGunungData(true);
+            } else {
+                showNotification('Gagal menyimpan perubahan', 'error');
+                console.error('Gagal menyimpan perubahan');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showNotification('Terjadi kesalahan', 'error');
+        });
+    });
+</script>

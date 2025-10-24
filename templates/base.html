@@ -5,12 +5,110 @@
 {% block meta %}
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="csrf-token" content="{{ csrf_token }}">
+    
 {% endblock meta %}
 <script src="https://cdn.tailwindcss.com">
 </script>
 </head>
 
 <body>
+    {% include 'navbar.html' %}
     {% block content %} {% endblock content %}
+    {% include 'footer.html' %}
+    <div id="toast-container" class="fixed top-5 right-5 z-[9999] space-y-2"></div>
+
+  <script>
+  function showToast(message, type="success") {
+    const container = document.getElementById("toast-container");
+    const toast = document.createElement("div");
+
+    // warna & ikon berdasarkan tipe
+    const color = type === "error" ? "bg-red-600" : "bg-[#87A330]";
+    const icon = type === "error" ? "❌" : "✅";
+
+    toast.className =
+      `${color} text-white flex items-center gap-2 px-4 py-3 rounded-lg shadow-lg opacity-0 translate-x-4 transition-all duration-300`;
+    toast.innerHTML = `<span>${icon}</span><span>${message}</span>`;
+
+    container.appendChild(toast);
+
+    // animasi muncul
+    requestAnimationFrame(() => {
+      toast.classList.remove("opacity-0", "translate-x-4");
+      toast.classList.add("opacity-100", "translate-x-0");
+    });
+
+    // hilang otomatis setelah 3 detik
+    setTimeout(() => {
+      toast.classList.add("opacity-0", "translate-x-4");
+      setTimeout(() => toast.remove(), 300);
+    }, 3000);
+  }
+  
+  document.addEventListener("click", async function(e) {
+  if (e.target && (e.target.id === "logout-btn" || e.target.id === "logout-btn-mobile")) {
+    e.preventDefault();
+    console.log("Logout click detected!");
+
+    const csrfToken =
+      document.querySelector("[name=csrfmiddlewaretoken]")?.value ||
+      document.querySelector('meta[name="csrf-token"]')?.content ||
+      "";
+
+    try {
+      const res = await fetch("{% url 'userprofile:logout' %}", {
+        method: "POST",
+        headers: {
+          "X-CSRFToken": csrfToken,
+          "X-Requested-With": "XMLHttpRequest"
+        },
+      });
+
+      const data = await res.json();
+      console.log("Logout response:", data);
+      if (data.success) {
+        // ✅ tunggu sedikit biar fetch gak ke-cancel
+        setTimeout(() => {
+          window.location.href = data.redirect_url;
+        }, 200);
+      } else {
+        alert("Logout gagal!");
+      }
+    } catch (err) {
+      console.error("Logout error:", err);
+      window.location.href = "{% url 'userprofile:login' %}";
+    }
+  }
+});
+
+
+  // Dipanggil dari onclick di tombol
+  window.toggleMobileMenu = function (e) {
+    e.stopPropagation();
+    const menu = document.querySelector(".mobile-menu");
+    if (menu) {
+      menu.classList.toggle("hidden");
+      console.log("🍔 toggled");
+    }
+  };
+
+  // Tutup bila klik di luar
+  document.addEventListener("click", function (e) {
+    const menu = document.querySelector(".mobile-menu");
+    const onBtn = e.target.closest(".mobile-menu-button");
+    const onMenu = e.target.closest(".mobile-menu");
+    if (menu && !onBtn && !onMenu) {
+      menu.classList.add("hidden");
+    }
+  });
+</script>
+
+<style>
+  /* pastikan tombol bisa diklik di atas apapun */
+  .mobile-menu-button { position: relative; z-index: 10000 !important; }
+  nav { z-index: 9999 !important; }
+  .mobile-menu { z-index: 9998 !important; }
+</style>
 </body>
 </html>
