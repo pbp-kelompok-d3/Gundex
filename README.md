@@ -29,7 +29,7 @@ GunDex dibangun dengan framework Django (MVT) serta memanfaatkan AJAX dan Tailwi
 ## 📕 Daftar Modul
 👤 User (Akun & Profil)  
 Dikerjakan oleh Fairuz Akhtar Randrasyah  
-Fitur User menangani seluruh sistem akun di GunDex. Mulai dari registrasi, login, logout, hingga pengelolaan profil pengguna. Setiap pendaki yang membuat akun akan memiliki dashboard pribadi tempat mereka dapat melihat wishlist, log pendakian, dan mengubah data profil mereka seperti nama, foto, atau biodata singkat. Fitur ini juga memastikan keamanan data pengguna dengan sistem autentikasi bawaan Django. Melalui modul User, GunDex menghadirkan pengalaman yang lebih personal bagi setiap pendaki, menjadikan aplikasi ini bukan sekadar database gunung, tetapi juga ruang digital yang mencatat jejak perjalananmu sebagai seorang hiker sejati.
+Fitur User menangani seluruh sistem akun di GunDex. Mulai dari registrasi, login, logout, hingga pengelolaan profil pengguna. Setiap pendaki yang membuat akun akan memiliki dashboard pribadi tempat mereka dapat melihat wishlist, log pendakian, dan mengubah data profil mereka seperti nama dan biodata singkat. Fitur ini juga memastikan keamanan data pengguna dengan sistem autentikasi bawaan Django. Melalui modul User, GunDex menghadirkan pengalaman yang lebih personal bagi setiap pendaki, menjadikan aplikasi ini bukan sekadar database gunung, tetapi juga ruang digital yang mencatat jejak perjalananmu sebagai seorang hiker sejati.
 
 🏔️ Explore Gunung  
 Dikerjakan oleh Rasyad Zulham Rabani  
