@@ -38,6 +38,10 @@ DEBUG = True
 
 ALLOWED_HOSTS = ["localhost", "127.0.0.1", "rasyad-zulham-gundex.pbp.cs.ui.ac.id", "127.0.0.1:8000"]
 
+CSRF_TRUSTED_ORIGINS = [
+    "https://rasyad-zulham-gundex.pbp.cs.ui.ac.id"
+]
+
 
 # Application definition
 
