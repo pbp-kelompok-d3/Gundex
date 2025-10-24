@@ -1,51 +1,56 @@
-<form id="logpendakian-form" method="post" action="{{ action_url|default:request.path }}">
+<form id="logpendakian-form" method="post" action="{{ action_url|default:request.path }}" class="p-6">
   {% csrf_token %}
   {{ form.non_field_errors }}
 
-  <div class="lp-field">
-    <label for="id_gunung">Gunung:</label>
-    {{ form.gunung }}
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+    <div class="lp-field">
+      <label for="id_gunung" class="block text-sm font-medium text-[#243010] mb-2">Gunung:</label>
+      {{ form.gunung }}
+    </div>
+
+    <div class="lp-field">
+      <label for="id_start_date" class="block text-sm font-medium text-[#243010] mb-2">{{ form.start_date.label }}:</label>
+      {{ form.start_date }}
+    </div>
+
+    <div class="lp-field">
+      <label for="id_end_date" class="block text-sm font-medium text-[#243010] mb-2">{{ form.end_date.label }}:</label>
+      {{ form.end_date }}
+    </div>
+
+    <div class="lp-field">
+      <label for="id_team_size" class="block text-sm font-medium text-[#243010] mb-2">{{ form.team_size.label }}:</label>
+      {{ form.team_size }}
+    </div>
   </div>
 
-  <div class="lp-field">
-    <label for="id_start_date">{{ form.start_date.label }}:</label>
-    {{ form.start_date }}
-  </div>
-
-  <div class="lp-field">
-    <label for="id_end_date">{{ form.end_date.label }}:</label>
-    {{ form.end_date }}
-  </div>
-
-  <div class="lp-field">
-    <label for="id_notes">{{ form.notes.label }}:</label>
+  <div class="lp-field mb-4">
+    <label for="id_notes" class="block text-sm font-medium text-[#243010] mb-2">{{ form.notes.label }}:</label>
     {{ form.notes }}
   </div>
 
-  <div class="lp-field lp-inline">
-    <label for="id_summit_reached">{{ form.summit_reached.label }}?</label>
-    {{ form.summit_reached }}
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+    <div class="lp-field lp-inline flex items-center">
+      <label for="id_summit_reached" class="block text-sm font-medium text-[#243010] mr-2">{{ form.summit_reached.label }}?</label>
+      {{ form.summit_reached }}
+    </div>
+
+    <div class="lp-field">
+      <label for="id_rating" class="block text-sm font-medium text-[#243010] mb-2">{{ form.rating.label }}:</label>
+      {{ form.rating }}
+    </div>
   </div>
 
-  <div class="lp-field">
-    <label for="id_team_size">{{ form.team_size.label }}:</label>
-    {{ form.team_size }}
-  </div>
-  
-  <div class="lp-field">
-    <label for="id_rating">{{ form.rating.label }}:</label>
-    {{ form.rating }}
-  </div>
   {% if form.non_field_errors %}
-  <div class="lp-errors">
-    <strong>Perlu diperbaiki:</strong>
-      <ul>
+  <div class="lp-errors bg-red-50 border border-red-200 rounded-lg p-4 mb-4">
+    <strong class="text-red-800">Perlu diperbaiki:</strong>
+      <ul class="list-disc list-inside text-red-700">
         {% for e in form.non_field_errors %}<li>{{ e }}</li>{% endfor %}
       </ul>
   </div>
   {% endif %}
-  <div class="lp-modal__actions">
-    <button type="submit" class="lp-btn">Simpan</button>
-    <button type="button" class="lp-btn lp-btn--ghost" data-close-modal>Batal</button>
+  <div class="lp-modal__actions flex justify-end space-x-3">
+    <button type="submit" class="lp-btn bg-[#87A330] hover:bg-[#A1C349] text-white font-medium py-2 px-6 rounded-lg transition-colors">Simpan</button>
+    <button type="button" class="lp-btn lp-btn--ghost bg-gray-300 hover:bg-gray-400 text-gray-800 font-medium py-2 px-6 rounded-lg transition-colors" data-close-modal>Batal</button>
   </div>
 </form>

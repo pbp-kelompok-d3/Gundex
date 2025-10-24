@@ -1,9 +1,9 @@
-<form id="lp-delete-form" method="post" action="{{ request.path }}">
+<form id="lp-delete-form" method="post" action="{{ request.path }}" class="p-6">
   {% csrf_token %}
-  <p>Hapus log pendakian <strong>{{ obj.gunung.nama }}</strong>?</p>
+  <p class="text-lg text-[#243010] mb-4">Hapus log pendakian <strong>{{ obj.gunung.nama }}</strong>?</p>
 
-  <div class="lp-modal__actions">
-    <button class="lp-btn" type="submit">Hapus</button>
-    <button class="lp-btn lp-btn--ghost" type="button" data-close-modal>Batal</button>
+  <div class="lp-modal__actions flex justify-end space-x-3">
+    <button class="lp-btn bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-6 rounded-lg transition-colors" type="submit">Hapus</button>
+    <button class="lp-btn lp-btn--ghost bg-gray-300 hover:bg-gray-400 text-gray-800 font-medium py-2 px-6 rounded-lg transition-colors" type="button" data-close-modal>Batal</button>
   </div>
 </form>

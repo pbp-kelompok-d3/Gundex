@@ -3,22 +3,34 @@
 {% static 'images/HikingImage.png' as PH %}
 {% firstof x.gunung.foto PH as img_url %}  {# pakai URL langsung dari field foto #}
 
-<li id="lp-item-{{ x.id }}" class="lp-card" data-id="{{ x.id }}">
-  <img class="lp-card__img" src="{{ img_url }}" alt="{{ x.gunung.nama|default:'Gunung' }}">
-  <div class="lp-card__body">
-    <div class="lp-card__title">
-      {{ x.gunung.nama }} •
-      {{ x.start_date|date:"M. j, Y" }} → {{ x.end_date|date:"M. j, Y" }}
-    </div>
-    <div class="lp-card__meta">
-      {% if x.summit_reached %}Tercapai Puncak{% else %}Belum sampai puncak{% endif %}
-      {% if x.team_size %} • {{ x.team_size }} orang{% endif %}
-      {% if x.rating %} • ⭐ {{ x.rating }}/5{% endif %}
-    </div>
-    {% if x.notes %}<div class="lp-card__notes">{{ x.notes|linebreaksbr }}</div>{% endif %}
-    <div class="lp-item__actions">
-      <button type="button" class="lp-action lp-btn--link" data-action="edit" data-id="{{ x.id }}">Edit</button>
-      <button type="button" class="lp-action lp-btn--link" data-action="delete" data-id="{{ x.id }}">Hapus</button>
+<li id="lp-item-{{ x.id }}" class="bg-white rounded-xl shadow-lg overflow-hidden transition-all duration-300 hover:shadow-xl" data-id="{{ x.id }}">
+  <div class="flex flex-col md:flex-row">
+    <img class="lp-card__img w-full md:w-48 h-48 object-cover" src="{{ img_url }}" alt="{{ x.gunung.nama|default:'Gunung' }}">
+    <div class="lp-card__body p-6 flex-1">
+      <div class="lp-card__title text-xl font-bold text-[#243010] mb-2">
+        {{ x.gunung.nama }} •
+        {{ x.start_date|date:"M. j, Y" }} → {{ x.end_date|date:"M. j, Y" }}
+      </div>
+      <div class="lp-card__meta text-gray-600 mb-3">
+        {% if x.summit_reached %}
+          <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+            Tercapai Puncak
+          </span>
+        {% else %}
+          <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+            Belum sampai puncak
+          </span>
+        {% endif %}
+        {% if x.team_size %} • {{ x.team_size }} orang{% endif %}
+        {% if x.rating %} • ⭐ {{ x.rating }}/5{% endif %}
+      </div>
+      {% if x.notes %}
+        <div class="lp-card__notes text-gray-700 mb-4">{{ x.notes|linebreaksbr }}</div>
+      {% endif %}
+      <div class="lp-item__actions flex space-x-3">
+        <button type="button" class="lp-action lp-btn--link text-[#87A330] hover:text-[#A1C349] font-medium" data-action="edit" data-id="{{ x.id }}">Edit</button>
+        <button type="button" class="lp-action lp-btn--link text-red-600 hover:text-red-700 font-medium" data-action="delete" data-id="{{ x.id }}">Hapus</button>
+      </div>
     </div>
   </div>
 </li>

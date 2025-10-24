@@ -1,56 +1,91 @@
+{% extends 'base.html' %}
 {% load static %}
-<div class="container mx-auto px-4 py-10 pt-16">
-    <h1 class="text-2xl font-bold mb-2 py-4 px-1">Temukan gunung favoritmu🏔️ — mulai petualangan baru sekarang!</h1>
-    <input type="text" 
-           id="search-input" 
-           placeholder="Cari berdasarkan nama atau provinsi..." 
-           class="w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500"
-           onkeyup="getGunungData()">
-    <div id="gunung-list" class="mt-3 mb-3 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
-    <div class="text-center mt-6">
-        <button id="show-more-btn"
-                class="hidden px-6 py-3 bg-[#2a3c24] text-white rounded-lg hover:scale-105 transform overflow-hidden transition duration-300">
-            Show More
-        </button>
+
+{% block content %}
+<div class="min-h-screen bg-gradient-to-b from-white to-[#CAD593]/20">
+    <div class="container mx-auto px-4 py-10 pt-16">
+        <!-- Header Section -->
+        <div class="text-center mb-12">
+            <h1 class="text-4xl font-bold text-[#243010] mb-4">
+                Temukan Gunung Favoritmu 🏔️
+            </h1>
+            <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+                Mulai petualangan baru dan jelajahi keindahan pegunungan Indonesia
+            </p>
+        </div>
+
+        <!-- Search Bar -->
+        <div class="max-w-2xl mx-auto mb-12">
+            <div class="relative">
+                <input type="text" 
+                       id="search-input" 
+                       placeholder="Cari berdasarkan nama atau provinsi..." 
+                       class="w-full p-4 pl-12 border border-gray-300 rounded-xl shadow-sm focus:ring-[#A1C349] focus:border-[#A1C349] text-lg"
+                       onkeyup="getGunungData()">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <svg class="h-6 w-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mountain Grid -->
+        <div id="gunung-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12"></div>
+
+        <!-- Load More Button -->
+        <div class="text-center">
+            <button id="show-more-btn"
+                    class="hidden px-8 py-4 bg-[#243010] text-white rounded-xl hover:bg-[#2A3C24] transform hover:scale-105 transition duration-300 font-medium">
+                Tampilkan Lebih Banyak
+            </button>
+        </div>
     </div>
 </div>
 
 <!-- Modal Edit -->
-<div id="edit-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
-    <div class="bg-white w-full max-w-lg rounded-lg shadow-lg p-6 relative">
-        <h2 class="text-2xl font-semibold mb-4">Edit Gunung</h2>
+<div id="edit-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50 p-4">
+    <div class="bg-white w-full max-w-lg rounded-xl shadow-lg p-6 relative">
+        <div class="flex items-center justify-between mb-6">
+            <h2 class="text-2xl font-bold text-[#243010]">Edit Gunung</h2>
+            <button onclick="closeEditModal()" class="text-gray-400 hover:text-gray-600">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+        </div>
         
-        <form id="edit-form" class="space-y-3">
+        <form id="edit-form" class="space-y-4">
             <input type="hidden" id="edit-id">
             
             <div>
-                <label class="block text-gray-700 font-medium">Nama</label>
-                <input type="text" id="edit-nama" class="w-full p-2 border rounded">
+                <label class="block text-[#243010] font-medium mb-2">Nama</label>
+                <input type="text" id="edit-nama" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-[#A1C349] focus:border-[#A1C349]">
             </div>
 
             <div>
-                <label class="block text-gray-700 font-medium">Provinsi</label>
-                <input type="text" id="edit-provinsi" class="w-full p-2 border rounded">
+                <label class="block text-[#243010] font-medium mb-2">Provinsi</label>
+                <input type="text" id="edit-provinsi" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-[#A1C349] focus:border-[#A1C349]">
             </div>
 
             <div>
-                <label class="block text-gray-700 font-medium">Ketinggian (mdpl)</label>
-                <input type="number" id="edit-ketinggian" class="w-full p-2 border rounded">
+                <label class="block text-[#243010] font-medium mb-2">Ketinggian (mdpl)</label>
+                <input type="number" id="edit-ketinggian" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-[#A1C349] focus:border-[#A1C349]">
             </div>
 
             <div>
-                <label class="block text-gray-700 font-medium">Foto (URL)</label>
-                <input type="url" id="edit-foto" class="w-full p-2 border rounded">
+                <label class="block text-[#243010] font-medium mb-2">Foto (URL)</label>
+                <input type="url" id="edit-foto" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-[#A1C349] focus:border-[#A1C349]">
             </div>
 
             <div>
-                <label class="block text-gray-700 font-medium">Deskripsi</label>
-                <textarea id="edit-deskripsi" rows="3" class="w-full p-2 border rounded"></textarea>
+                <label class="block text-[#243010] font-medium mb-2">Deskripsi</label>
+                <textarea id="edit-deskripsi" rows="4" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-[#A1C349] focus:border-[#A1C349]"></textarea>
             </div>
 
-            <div class="flex justify-end gap-2 mt-4">
-                <button type="button" onclick="closeEditModal()" class="px-4 py-2 bg-gray-400 text-white rounded hover:bg-gray-500">Batal</button>
-                <button type="submit" class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">Simpan</button>
+            <div class="flex justify-end gap-3 pt-4">
+                <button type="button" onclick="closeEditModal()" class="px-6 py-3 bg-gray-400 text-white rounded-lg hover:bg-gray-500 transition-colors">Batal</button>
+                <button type="submit" class="px-6 py-3 bg-[#87A330] text-white rounded-lg hover:bg-[#A1C349] transition-colors">Simpan</button>
             </div>
         </form>
     </div>
@@ -433,3 +468,5 @@
         });
     });
 </script>
+
+{% endblock content %}

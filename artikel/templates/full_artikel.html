@@ -173,7 +173,7 @@
     {% if is_admin %}
     <div class="fixed bottom-8 right-8">
         <a href="{% url 'artikel:create_artikel' %}"
-        class="flex items-center gap-2 bg-green-700 hover:bg-green-800 text-white font-semibold py-3 px-5 rounded-full shadow-lg transition-all duration-300 ease-in-out">
+        class="flex items-center gap-2 bg-[#87A330] hover:bg-[#A1C349] text-white font-semibold py-3 px-5 rounded-full shadow-lg transition-all duration-300 ease-in-out">
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
             stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
             <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m6-6H6" />
@@ -191,15 +191,15 @@
     <form id="createForm">
       {% csrf_token %}
       <input type="text" name="title" placeholder="Judul Artikel"
-             class="w-full mb-4 p-2 border rounded-lg" required>
+             class="w-full mb-4 p-3 border border-gray-300 rounded-lg focus:ring-[#A1C349] focus:border-[#A1C349]" required>
 
       <textarea name="description" rows="6" placeholder="Deskripsi Artikel"
-                class="w-full p-2 border rounded-lg mb-4" required></textarea>
+                class="w-full p-3 border border-gray-300 rounded-lg mb-4 focus:ring-[#A1C349] focus:border-[#A1C349]" required></textarea>
 
       <!-- URL input -->
       <input type="url" name="image" id="imageURL" 
              placeholder="Masukkan URL gambar (opsional)"
-             class="w-full mb-4 p-2 border rounded-lg">
+             class="w-full mb-4 p-3 border border-gray-300 rounded-lg focus:ring-[#A1C349] focus:border-[#A1C349]">
 
       <!-- Preview -->
       <div id="imagePreview" class="hidden mb-4 text-center">
@@ -209,16 +209,17 @@
 
       <div class="flex justify-end space-x-3">
         <button type="button" id="cancelCreate" 
-                class="bg-gray-400 text-white px-4 py-2 rounded-lg hover:bg-gray-500">Batal</button>
+                class="bg-gray-400 text-white px-4 py-2 rounded-lg hover:bg-gray-500 transition-colors">Batal</button>
         <button type="submit" 
-                class="bg-[#87A330] text-white px-4 py-2 rounded-lg hover:bg-[#A1C349]">Simpan</button>
+                class="bg-[#87A330] text-white px-4 py-2 rounded-lg hover:bg-[#A1C349] transition-colors">Simpan</button>
       </div>
     </form>
 
     <button id="closeCreate" 
-            class="absolute top-3 right-4 text-gray-600 text-xl hover:text-[#87A330]">✕</button>
+            class="absolute top-3 right-4 text-gray-600 text-xl hover:text-[#87A330] transition-colors">✕</button>
   </div>
 </div>
+
 
 
 <script>

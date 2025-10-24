@@ -6,7 +6,7 @@
 
 <!-- Banner Section - Fixed Background -->
 <div class="fixed top-0 left-0 w-full h-[60vh] z-0">
-    <img src="{% static 'image/hiking.jpg' %}" alt="Hiking Banner" class="w-full h-full object-cover">
+    <div class="w-full h-full bg-gradient-to-br from-[#243010] to-[#2A3C24]"></div>
     <!-- Optional overlay for better text readability -->
     <div class="absolute inset-0 bg-black/40"></div>
 </div>
@@ -16,11 +16,11 @@
     <!-- Hero Section with Banner Text -->
     <div class="min-h-[60vh] flex items-center justify-center text-white relative z-20">
         <div class="text-center px-4">
-            <h1 style="text-align: center;" class="text-4xl md:text-6xl font-bold mb-6 text-white drop-shadow-lg">
-                <span class="text-green-400">Gun</span>dex Profile
+            <h1 class="text-4xl md:text-6xl font-bold mb-6 text-white drop-shadow-lg">
+                <span class="text-[#A1C349]">Gun</span>dex Profile
             </h1>
-            <p style="text-align: center;" class="text-lg md:text-xl mb-8 text-white/90 drop-shadow-md max-w-2xl mx-auto">
-                Manage your hiking profile information and connect with the community
+            <p class="text-lg md:text-xl mb-8 text-white/90 drop-shadow-md max-w-2xl mx-auto">
+                Kelola informasi profil pendakian Anda dan terhubung dengan komunitas
             </p>
         </div>
     </div>
@@ -30,9 +30,9 @@
         <div class="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
             <!-- Header Section -->
             <div class="mb-8 text-center">
-                <h2 class="text-3xl font-bold text-gray-900 mb-2">Profile Information</h2>
-                <p class="text-gray-600">Update your personal information and hiking details</p>
-                <div class="w-16 h-1 bg-green-600 mx-auto rounded-full mt-4"></div>
+                <h2 class="text-3xl font-bold text-[#243010] mb-2">Informasi Profil</h2>
+                <p class="text-gray-600">Perbarui informasi pribadi dan detail pendakian Anda</p>
+                <div class="w-16 h-1 bg-[#87A330] mx-auto rounded-full mt-4"></div>
             </div>
 
             <!-- Profile Form Card -->
@@ -54,7 +54,7 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <!-- Username (Read-only) -->
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                            <label class="block text-sm font-medium text-[#243010] mb-2">
                                 Username
                             </label>
                             <input type="text" 
@@ -66,7 +66,7 @@
 
                         <!-- Email (Read-only) -->
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                            <label class="block text-sm font-medium text-[#243010] mb-2">
                                 Email
                             </label>
                             <input type="email" 
@@ -78,41 +78,41 @@
 
                         <!-- First Name (Editable) -->
                         <div>
-                            <label for="{{ form.first_name.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
-                                First Name
+                            <label for="{{ form.first_name.id_for_label }}" class="block text-sm font-medium text-[#243010] mb-2">
+                                Nama Depan
                             </label>
                             <input type="text" 
                                    name="first_name" 
                                    id="{{ form.first_name.id_for_label }}"
                                    value="{{ form.first_name.value|default:'' }}"
-                                   class="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all">
+                                   class="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-[#A1C349] focus:border-[#A1C349] transition-all">
                         </div>
 
                         <!-- Last Name (Editable) -->
                         <div>
-                            <label for="{{ form.last_name.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
-                                Last Name
+                            <label for="{{ form.last_name.id_for_label }}" class="block text-sm font-medium text-[#243010] mb-2">
+                                Nama Belakang
                             </label>
                             <input type="text" 
                                    name="last_name" 
                                    id="{{ form.last_name.id_for_label }}"
                                    value="{{ form.last_name.value|default:'' }}"
-                                   class="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all">
+                                   class="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-[#A1C349] focus:border-[#A1C349] transition-all">
                         </div>
 
                         <!-- Account Type (Read-only) -->
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">
-                                Account Type
+                            <label class="block text-sm font-medium text-[#243010] mb-2">
+                                Tipe Akun
                             </label>
                             <div class="mt-1 block w-full px-4 py-3 border border-gray-300 bg-gray-50 rounded-xl">
                                 {% if user.is_admin %}
-                                    <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
+                                    <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-[#A1C349] text-white">
                                         🛠️ Admin
                                     </span>
                                 {% else %}
-                                    <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
-                                        🥾 Hiker
+                                    <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-[#87A330] text-white">
+                                        🥾 Pendaki
                                     </span>
                                 {% endif %}
                             </div>
@@ -120,8 +120,8 @@
 
                         <!-- Last Login (Read-only) -->
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">
-                                Last Login
+                            <label class="block text-sm font-medium text-[#243010] mb-2">
+                                Terakhir Masuk
                             </label>
                             <input type="text" 
                                    value="{{ last_login|default:'Not available' }}" 
@@ -133,22 +133,22 @@
 
                     <!-- Bio (Editable) - Full width -->
                     <div class="mt-8">
-                        <label for="{{ form.bio.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                        <label for="{{ form.bio.id_for_label }}" class="block text-sm font-medium text-[#243010] mb-2">
                             Bio
                         </label>
                         <textarea name="bio" 
                                   id="{{ form.bio.id_for_label }}" 
                                   rows="4"
-                                  placeholder="Tell other hikers about yourself..."
-                                  class="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all resize-none">{{ form.bio.value|default:'' }}</textarea>
-                        <p class="text-xs text-gray-500 mt-2">Share your hiking experience and inspire others (optional)</p>
+                                  placeholder="Ceritakan tentang pengalaman pendakian Anda..."
+                                  class="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-[#A1C349] focus:border-[#A1C349] transition-all resize-none">{{ form.bio.value|default:'' }}</textarea>
+                        <p class="text-xs text-gray-500 mt-2">Bagikan pengalaman pendakian dan inspirasi Anda (opsional)</p>
                     </div>
 
                     <!-- Error Messages -->
                     {% if form.errors %}
                         <div class="mt-6 bg-red-50 border border-red-200 rounded-xl p-4">
                             <div class="text-sm text-red-600">
-                                <h4 class="font-medium mb-2">Please fix the following errors:</h4>
+                                <h4 class="font-medium mb-2">Harap perbaiki kesalahan berikut:</h4>
                                 {% for field, errors in form.errors.items %}
                                     {% for error in errors %}
                                         <p class="mb-1">• {{ error }}</p>
@@ -160,11 +160,11 @@
 
                     <!-- Action Buttons -->
                     <div class="flex flex-col sm:flex-row gap-4 pt-8 mt-8 border-t border-gray-200">
-                        <button type="submit" class="flex-1 bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white font-medium py-4 px-6 rounded-xl transition-all transform hover:scale-105 shadow-lg">
-                            Update Profile
+                        <button type="submit" class="flex-1 bg-gradient-to-r from-[#87A330] to-[#A1C349] hover:from-[#A1C349] hover:to-[#87A330] text-white font-medium py-4 px-6 rounded-xl transition-all transform hover:scale-105 shadow-lg">
+                            Perbarui Profil
                         </button>
                         <a href="{% url 'main:show_main' %}" class="flex-1 bg-gradient-to-r from-gray-600 to-gray-700 hover:from-gray-700 hover:to-gray-800 text-white font-medium py-4 px-6 rounded-xl transition-all transform hover:scale-105 shadow-lg text-center">
-                            Back to Home
+                            Kembali ke Beranda
                         </a>
                     </div>
                 </form>
@@ -173,8 +173,8 @@
             <!-- Account Actions -->
             <div class="mt-8">
                 <div class="bg-white shadow-lg rounded-xl p-6">
-                    <h3 class="text-lg font-medium text-gray-900 mb-4 flex items-center">
-                        Account Actions
+                    <h3 class="text-lg font-medium text-[#243010] mb-4 flex items-center">
+                        Aksi Akun
                     </h3>
                     <div class="flex space-x-4">
                         <a href="{% url 'userprofile:logout' %}" class="bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white font-medium py-3 px-6 rounded-xl transition-all transform hover:scale-105 shadow-md">
@@ -192,7 +192,7 @@
     .form-style input:focus, 
     .form-style textarea:focus {
         transform: translateY(-1px);
-        box-shadow: 0 4px 12px rgba(34, 197, 94, 0.15);
+        box-shadow: 0 4px 12px rgba(161, 195, 73, 0.15);
     }
     
     /* Smooth scrolling */
