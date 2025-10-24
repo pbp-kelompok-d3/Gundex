@@ -40,7 +40,7 @@ def show_json(request):
     # Kirim juga apakah masih ada halaman berikutnya
     has_more = end < gunung_list.count()
 
-    return JsonResponse({'results': data, 'has_more': has_more, 'is_superuser': request.user.is_superuser,})
+    return JsonResponse({'results': data, 'has_more': has_more, 'is_admin': request.user.is_admin,})
 
 @login_required(login_url='/userprofile/login/')
 def show_gunung(request, id):
