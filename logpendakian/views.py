@@ -11,7 +11,7 @@ from .models import LogPendakian
 def _current_profile(request):
     return request.user
 
-@login_required
+@login_required(login_url='/userprofile/login/')
 def log_list(request):
     prof = _current_profile(request)
     logs = (LogPendakian.objects
@@ -21,7 +21,7 @@ def log_list(request):
     empty = not logs.exists()
     return render(request, "logpendakian/list.html", {"logs": logs, "empty": empty})
 
-@login_required
+@login_required(login_url='/userprofile/login/')
 def log_create(request):
     if request.method == "POST":
         form = LogPendakianForm(request.POST)
@@ -56,7 +56,7 @@ def log_create(request):
     )
     return JsonResponse({"html": html})
 
-@login_required
+@login_required(login_url='/userprofile/login/')
 def log_update(request, pk):
     obj = get_object_or_404(LogPendakian, pk=pk, user=request.user)
     if request.method == "POST":
@@ -90,7 +90,7 @@ def log_update(request, pk):
     return JsonResponse({"html": html})
 
 
-@login_required
+@login_required(login_url='/userprofile/login/')
 def log_delete(request, pk):
     if request.method == "GET":
         obj = get_object_or_404(LogPendakian, pk=pk, user=request.user)
