@@ -1,3 +1,4 @@
 from django.contrib import admin
+from .models import LogPendakian
 
-# Register your models here
+admin.site.register(LogPendakian)
