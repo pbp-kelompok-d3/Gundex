@@ -11,6 +11,9 @@
 <body class="bg-gray-50">
     <link rel="stylesheet" type="text/css" href="{% static 'css/global.css' %}">
     
+    <!-- Toast Container -->
+    <div id="toast-container" class="fixed top-5 right-5 z-[10000] space-y-2"></div>
+    
     <div class="min-h-screen bg-gray-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
         <div class="max-w-md w-full space-y-8">
             <!-- Header -->
@@ -22,26 +25,6 @@
                     Sign in to start your hiking journey today
                 </p>
             </div>
-
-            <!-- Success Message from Registration -->
-            {% if registration_success %}
-                <div class="bg-green-50 border border-green-200 rounded-md p-4">
-                    <div class="text-sm text-green-600">
-                        Registration successful! Please login below.
-                    </div>
-                </div>
-            {% endif %}
-
-            <!-- General Messages -->
-            {% if messages %}
-                {% for message in messages %}
-                    <div class="bg-{% if message.tags == 'success' %}green{% elif message.tags == 'error' %}red{% else %}blue{% endif %}-50 border border-{% if message.tags == 'success' %}green{% elif message.tags == 'error' %}red{% else %}blue{% endif %}-200 rounded-md p-4">
-                        <div class="text-sm text-{% if message.tags == 'success' %}green{% elif message.tags == 'error' %}red{% else %}blue{% endif %}-600">
-                            {{ message }}
-                        </div>
-                    </div>
-                {% endfor %}
-            {% endif %}
 
             <!-- Loading Spinner -->
             <div id="loading-spinner" class="hidden text-center">
@@ -76,18 +59,6 @@
                     </div>
                 </div>
 
-                <!-- Error Messages -->
-                <div id="error-messages" class="hidden bg-red-50 border border-red-200 rounded-md p-4">
-                    <div class="text-sm text-red-600" id="error-content">
-                    </div>
-                </div>
-
-                <!-- Success Messages -->
-                <div id="success-messages" class="hidden bg-green-50 border border-green-200 rounded-md p-4">
-                    <div class="text-sm text-green-600" id="success-content">
-                    </div>
-                </div>
-
                 <!-- Submit Button -->
                 <div>
                     <button type="submit" id="login-btn" class="w-full bg-green-600 hover:bg-green-700 text-white font-medium py-3 px-4 rounded-md transition-colors">
@@ -109,22 +80,82 @@
     </div>
 
     <script>
+    // Include toast function
+    function showToast(message, type = "success") {
+      const container = document.getElementById("toast-container");
+      if (!container) return;
+
+      const toast = document.createElement("div");
+      
+      let bgColor, icon, borderColor;
+      switch(type) {
+        case 'success':
+          bgColor = 'bg-green-600'; borderColor = 'border-green-500'; icon = '✅'; break;
+        case 'error':
+          bgColor = 'bg-red-600'; borderColor = 'border-red-500'; icon = '❌'; break;
+        case 'warning':
+          bgColor = 'bg-yellow-600'; borderColor = 'border-yellow-500'; icon = '⚠️'; break;
+        case 'info':
+          bgColor = 'bg-blue-600'; borderColor = 'border-blue-500'; icon = 'ℹ️'; break;
+        default:
+          bgColor = 'bg-[#87A330]'; borderColor = 'border-[#87A330]'; icon = '🏔️';
+      }
+
+      toast.className = `${bgColor} ${borderColor} text-white flex items-center gap-3 px-4 py-3 rounded-lg shadow-lg border-l-4 opacity-0 translate-x-4 transition-all duration-300 max-w-sm`;
+      toast.innerHTML = `
+        <span class="text-lg">${icon}</span>
+        <span class="flex-1 text-sm font-medium">${message}</span>
+        <button onclick="this.parentElement.remove()" class="text-white/80 hover:text-white text-lg leading-none">×</button>
+      `;
+
+      container.appendChild(toast);
+
+      requestAnimationFrame(() => {
+        toast.classList.remove("opacity-0", "translate-x-4");
+        toast.classList.add("opacity-100", "translate-x-0");
+      });
+
+      const delay = type === 'error' ? 5000 : 3000;
+      setTimeout(() => {
+        if (toast.parentElement) {
+          toast.classList.add("opacity-0", "translate-x-4");
+          setTimeout(() => toast.remove(), 300);
+        }
+      }, delay);
+    }
+
     document.addEventListener('DOMContentLoaded', function() {
         const loginForm = document.getElementById('login-form');
         const loadingSpinner = document.getElementById('loading-spinner');
-        const errorMessages = document.getElementById('error-messages');
-        const successMessages = document.getElementById('success-messages');
-        const errorContent = document.getElementById('error-content');
-        const successContent = document.getElementById('success-content');
+
+        // Show registration success message if available
+        {% if registration_success %}
+        showToast('Registration successful! Please login below.', 'success');
+        {% endif %}
+
+        // Show Django messages as toasts
+        {% if messages %}
+          {% for message in messages %}
+            let toastType = 'info';
+            {% if message.tags == 'success' %}
+              toastType = 'success';
+            {% elif message.tags == 'error' %}
+              toastType = 'error';
+            {% elif message.tags == 'warning' %}
+              toastType = 'warning';
+            {% endif %}
+            showToast("{{ message|escapejs }}", toastType);
+          {% endfor %}
+        {% endif %}
 
         loginForm.addEventListener('submit', function(e) {
             e.preventDefault();
             
             // Show loading state
             loadingSpinner.classList.remove('hidden');
-            loginForm.classList.add('hidden');
-            errorMessages.classList.add('hidden');
-            successMessages.classList.add('hidden');
+            loginForm.classList.add('opacity-50');
+            
+            showToast('Signing you in...', 'info');
 
             // Get form data
             const formData = new FormData(loginForm);
@@ -141,36 +172,34 @@
             .then(response => response.json())
             .then(data => {
                 loadingSpinner.classList.add('hidden');
-                loginForm.classList.remove('hidden');
+                loginForm.classList.remove('opacity-50');
 
                 if (data.success) {
-                    // Show success message
-                    successContent.innerHTML = data.message;
-                    successMessages.classList.remove('hidden');
+                    // Show success toast
+                    showToast(data.message, 'success');
                     
-                    // Redirect after a short delay
+                    // Redirect after delay
                     setTimeout(() => {
                         window.location.href = data.redirect_url;
                     }, 1500);
                 } else {
                     // Show error messages
-                    let errorHtml = '';
-                    for (const [field, errors] of Object.entries(data.errors)) {
-                        errors.forEach(error => {
-                            errorHtml += `<p>• ${error}</p>`;
-                        });
+                    if (data.errors) {
+                        for (const [field, errors] of Object.entries(data.errors)) {
+                            errors.forEach(error => {
+                                showToast(error, 'error');
+                            });
+                        }
+                    } else {
+                        showToast('Login failed. Please try again.', 'error');
                     }
-                    errorContent.innerHTML = errorHtml;
-                    errorMessages.classList.remove('hidden');
                 }
             })
             .catch(error => {
                 console.error('Error:', error);
                 loadingSpinner.classList.add('hidden');
-                loginForm.classList.remove('hidden');
-                
-                errorContent.innerHTML = '<p>• An error occurred. Please try again.</p>';
-                errorMessages.classList.remove('hidden');
+                loginForm.classList.remove('opacity-50');
+                showToast('Connection error. Please try again.', 'error');
             });
         });
     });

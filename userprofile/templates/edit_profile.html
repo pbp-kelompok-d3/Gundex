@@ -37,17 +37,6 @@
 
             <!-- Profile Form Card -->
             <div class="bg-white shadow-2xl rounded-2xl p-8">
-                <!-- Messages -->
-                {% if messages %}
-                    {% for message in messages %}
-                        <div class="mb-6 bg-{% if message.tags == 'success' %}green{% elif message.tags == 'error' %}red{% else %}blue{% endif %}-50 border border-{% if message.tags == 'success' %}green{% elif message.tags == 'error' %}red{% else %}blue{% endif %}-200 rounded-xl p-4">
-                            <div class="text-sm text-{% if message.tags == 'success' %}green{% elif message.tags == 'error' %}red{% else %}blue{% endif %}-600">
-                                {{ message }}
-                            </div>
-                        </div>
-                    {% endfor %}
-                {% endif %}
-
                 <form method="POST" class="form-style">
                     {% csrf_token %}
                     
@@ -177,9 +166,9 @@
                         Account Actions
                     </h3>
                     <div class="flex space-x-4">
-                        <a href="{% url 'userprofile:logout' %}" class="bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white font-medium py-3 px-6 rounded-xl transition-all transform hover:scale-105 shadow-md">
+                        <button onclick="showLogoutModal()" class="bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white font-medium py-3 px-6 rounded-xl transition-all transform hover:scale-105 shadow-md">
                             Logout
-                        </a>
+                        </button>
                     </div>
                 </div>
             </div>
