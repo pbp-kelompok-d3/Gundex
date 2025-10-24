@@ -1,4 +1,4 @@
-<nav class="fixed top-0 left-0 w-full bg-white border-b border-gray-200 shadow-sm z-50">
+<nav class="fixed top-0 left-0 w-full bg-white border-b border-gray-200 shadow-sm z-[9999]">
     <div class="max-w-7xl mx-auto px-6 lg:px-8">
       <div class="flex items-center justify-between h-16">
         <div class="flex items-center">
@@ -51,7 +51,11 @@
         
         <!-- Mobile Menu Button -->
         <div class="md:hidden flex items-center">
-          <button class="mobile-menu-button p-2 text-gray-600 hover:text-gray-900 transition-colors">
+          <button
+            class="mobile-menu-button p-2 text-gray-600 hover:text-gray-900 transition-colors"
+            onclick="toggleMobileMenu(event)"
+            type="button"
+          >
             <span class="sr-only">Open menu</span>
             <div class="w-6 h-6 flex flex-col justify-center items-center">
               <span class="bg-current block transition-all duration-300 ease-out h-0.5 w-6 rounded-sm"></span>
@@ -64,7 +68,7 @@
     </div>
     
     <!-- Mobile Menu -->
-    <div class="mobile-menu hidden md:hidden bg-white border-t border-gray-200">
+    <div class="mobile-menu hidden md:hidden bg-white border-t border-gray-200 absolute top-16 left-0 w-full shadow-lg z-[9998]">
       <div class="px-6 py-4 space-y-4">
         <!-- Mobile Navigation Links -->
         <div class="space-y-1">

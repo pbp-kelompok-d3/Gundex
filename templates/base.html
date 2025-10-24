@@ -6,6 +6,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token }}">
+    
 {% endblock meta %}
 <script src="https://cdn.tailwindcss.com">
 </script>
@@ -80,6 +81,34 @@
     }
   }
 });
-  </script>
+
+
+  // Dipanggil dari onclick di tombol
+  window.toggleMobileMenu = function (e) {
+    e.stopPropagation();
+    const menu = document.querySelector(".mobile-menu");
+    if (menu) {
+      menu.classList.toggle("hidden");
+      console.log("🍔 toggled");
+    }
+  };
+
+  // Tutup bila klik di luar
+  document.addEventListener("click", function (e) {
+    const menu = document.querySelector(".mobile-menu");
+    const onBtn = e.target.closest(".mobile-menu-button");
+    const onMenu = e.target.closest(".mobile-menu");
+    if (menu && !onBtn && !onMenu) {
+      menu.classList.add("hidden");
+    }
+  });
+</script>
+
+<style>
+  /* pastikan tombol bisa diklik di atas apapun */
+  .mobile-menu-button { position: relative; z-index: 10000 !important; }
+  nav { z-index: 9999 !important; }
+  .mobile-menu { z-index: 9998 !important; }
+</style>
 </body>
 </html>
