@@ -33,7 +33,7 @@ Fitur User menangani seluruh sistem akun di GunDex. Mulai dari registrasi, login
 
 🏔️ Explore Gunung  
 Dikerjakan oleh Rasyad Zulham Rabani  
-Fitur Explore Gunung menjadi halaman utama dari GunDex, tempat para pengguna bisa menjelajahi berbagai gunung di Indonesia. Di sini, pendaki bisa mencari gunung berdasarkan nama, lokasi, provinsi, atau ketinggian dengan tampilan yang interaktif dan responsif. Setiap gunung memiliki halaman detail berisi informasi jalur pendakian, kondisi umum, dan ulasan dari pendaki lain. Dengan fitur ini, para hiker tidak perlu bingung lagi ingin mendaki ke mana. Cukup buka GunDex, dan temukan gunung impianmu dengan mudah!
+Fitur Explore Gunung menjadi halaman utama dari GunDex, tempat para pengguna bisa menjelajahi berbagai gunung di Indonesia. Di sini, pendaki bisa mencari gunung berdasarkan nama dan provinsi dengan tampilan yang interaktif dan responsif. Setiap gunung memiliki halaman detail berisi informasi deskripsi, lokasi, dan ketinggian. Dengan fitur ini, para hiker tidak perlu bingung lagi ingin mendaki ke mana. Cukup buka GunDex, dan temukan gunung impianmu dengan mudah!
 
 💡 Artikel  
 Dikerjakan oleh M. Adella Fathir Supriadi   
@@ -45,7 +45,7 @@ Fitur Wishlist membantu pengguna menyimpan daftar gunung yang ingin mereka daki 
 
 🥾 Log Pendakian  
 Dikerjakan oleh Moch Raydzan  
-Fitur Log Pendakian berfungsi sebagai jurnal pribadi pendaki untuk mencatat setiap pengalaman mendakinya. Pengguna dapat menulis tanggal pendakian, jalur yang digunakan, kondisi cuaca, serta kesan pribadi selama perjalanan. Semua log ini tersimpan dalam akun pengguna dan bersifat privat, sehingga hanya pemilik akun yang bisa melihat riwayat pendakiannya sendiri. Melalui fitur ini, setiap pendaki dapat melacak progres pendakiannya dari waktu ke waktu dan mengenang momen-momen berharga di puncak gunung favorit mereka. GunDex membuat setiap langkah pendakian tidak hanya berakhir di puncak, tetapi juga terekam selamanya di jurnal digitalmu!
+Fitur Log Pendakian berfungsi sebagai jurnal pribadi pendaki untuk mencatat setiap pengalaman mendakinya. Pengguna dapat menulis tanggal mulai dan selesai pendakian, rating pendakian, jumlah orang dalam tim, serta kesan pribadi selama perjalanan. Semua log ini tersimpan dalam akun pengguna dan bersifat privat, sehingga hanya pemilik akun yang bisa melihat riwayat pendakiannya sendiri. Melalui fitur ini, setiap pendaki dapat melacak progres pendakiannya dari waktu ke waktu dan mengenang momen-momen berharga di puncak gunung favorit mereka. GunDex membuat setiap langkah pendakian tidak hanya berakhir di puncak, tetapi juga terekam selamanya di jurnal digitalmu!
 
 ## 📊 Initial Dataset
 GunDex menggunakan dataset buatan sendiri yang berisi daftar gunung di Indonesia, mencakup nama gunung, lokasi, dan ketinggian.
@@ -60,13 +60,13 @@ https://datagunung.com
 
 ## 🧍‍♂️🧗‍♀️ Jenis Pengguna
 🛠️ Admin  
-Admin memiliki peran sebagai pengelola utama sistem. Mereka bertanggung jawab untuk menambah dan memperbarui data gunung, mengelola artikel pendakian, serta memantau aktivitas pengguna. Selain itu, admin juga memastikan bahwa setiap konten yang tampil di GunDex akurat dan sesuai dengan tujuan platform, yaitu menjadi sumber informasi terpercaya bagi pendaki di seluruh Indonesia.  
+Admin memiliki peran sebagai pengelola utama sistem. Mereka bertanggung jawab untuk memperbarui dan menghapus data gunung, mengelola artikel pendakian, serta memantau aktivitas pengguna. Selain itu, admin juga memastikan bahwa setiap konten yang tampil di GunDex akurat dan sesuai dengan tujuan platform, yaitu menjadi sumber informasi terpercaya bagi pendaki di seluruh Indonesia.  
 
 🥾 Hiker  
 Hiker adalah pengguna umum yang memanfaatkan seluruh fitur GunDex. Mereka dapat melihat daftar gunung, menambah gunung ke wishlist, mencatat log pendakian pribadi, membaca artikel, dan mengelola akun mereka sendiri. Dengan akun pribadi, setiap hiker bisa menyimpan jejak pendakiannya dan membangun arsip perjalanan mereka dari waktu ke waktu. GunDex membantu para pendaki untuk tetap terhubung dengan alam, komunitas, dan diri mereka sendiri. Karena setiap pendakian punya cerita yang layak untuk diingat.
 
 
 ## Link PWS dan design
-https://rasyad.zulham-gundex.pbp.cs.ui.ac.id
+[https://rasyad.zulham-gundex.pbp.cs.ui.ac.id](https://rasyad-zulham-gundex.pbp.cs.ui.ac.id/)
 
 https://www.figma.com/design/pBlQu8uLwuBH9aJQWKuQR0/Grand-Design?m=auto&t=gsURRZSHrJvA3pdE-1
