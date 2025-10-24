@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'main',
+    'wishlist',
     'explore_gunung',
     'userprofile',
     'artikel',
