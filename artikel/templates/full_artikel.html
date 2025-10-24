@@ -25,10 +25,18 @@
             <div id="carousel-inner" class="flex transition-transform duration-700 ease-in-out">
                 {% for artikel in latest_artikels %}
                     <div class="min-w-full relative">
-                        <img src="{{ artikel.image }}" 
-                             alt="{{ artikel.title }}" 
-                             class="w-full h-80 object-cover rounded-xl cursor-pointer"
-                             onclick="window.location.href='{% url 'artikel:artikel_detail' artikel.id %}'">
+                        {% if artikel.image %}
+                          <img src="{{ artikel.image }}"
+                              alt="{{ artikel.title }}"
+                              class="w-full h-80 object-cover rounded-xl cursor-pointer"
+                              onerror="this.onerror=null;this.src='{% static 'image/no-artikel.png' %}'"
+                              onclick="window.location.href='{% url 'artikel:artikel_detail' artikel.id %}'">
+                        {% else %}
+                          <img src="{% static 'image/no-artikel.png' %}"
+                              alt="{{ artikel.title }}"
+                              class="w-full h-80 object-cover rounded-xl cursor-pointer"
+                              onclick="window.location.href='{% url 'artikel:artikel_detail' artikel.id %}'">
+                        {% endif %}
                         <!-- Overlay gradient for better readability -->
                         <div class="absolute inset-0 flex flex-col justify-end bg-gradient-to-t from-[#243010]/80 via-[#243010]/10 to-transparent rounded-xl">
                             <div class="p-6">
@@ -97,12 +105,18 @@
     <div id="recommendation-list">
         {% for artikel in recommended_artikels %}
         <a href="{% url 'artikel:artikel_detail' artikel.id %}" 
-           class="flex items-center mb-4 bg-[#F9FAF5] border-l-4 border-[#A1C349] p-3 rounded-lg shadow hover:shadow-lg transition">
-            <img src="{{ artikel.image }}" alt="{{ artikel.title }}" 
-                 class="w-20 h-20 object-cover rounded-lg mr-4">
-            <h3 class="text-lg font-semibold text-[#243010] hover:text-[#87A330]">{{ artikel.title }}</h3>
+          class="flex items-center mb-4 bg-[#F9FAF5] border-l-4 border-[#A1C349] p-3 rounded-lg shadow hover:shadow-lg transition">
+          {% if artikel.image %}
+            <img src="{{ artikel.image }}" alt="{{ artikel.title }}"
+                class="w-20 h-20 object-cover rounded-lg mr-4"
+                onerror="this.onerror=null;this.src='{% static 'image/no-artikel.png' %}'">
+          {% else %}
+            <img src="{% static 'image/no-artikel.png' %}" alt="{{ artikel.title }}"
+                class="w-20 h-20 object-cover rounded-lg mr-4">
+          {% endif %}
+          <h3 class="text-lg font-semibold text-[#243010] hover:text-[#87A330]">{{ artikel.title }}</h3>
         </a>
-        {% empty %}
+              {% empty %}
         <p class="text-gray-600 italic">Belum ada artikel rekomendasi.</p>
         {% endfor %}
     </div>
@@ -277,13 +291,15 @@ refreshButton.addEventListener("click", async () => {
     try {
         const response = await fetch("{% url 'artikel:refresh_recommendations' %}");
         const data = await response.json();
+        const fallbackImg = "{% static 'image/no-artikel.png' %}";
 
         let newHTML = "";
         data.artikels.forEach(a => {
             newHTML += `
-            <a href="/artikel/${a.id}/" 
+            <a href="/artikel/artikel/${a.id}/" 
                class="flex items-center mb-4 bg-[#F9FAF5] border-l-4 border-[#A1C349] p-3 rounded-lg shadow hover:shadow-lg transition">
-                <img src="${a.image}" alt="${a.title}" 
+                <img src="${a.image}" alt="${a.title}"
+                     onerror="this.onerror=null;this.src='${fallbackImg}'"
                      class="w-20 h-20 object-cover rounded-lg mr-4">
                 <h3 class="text-lg font-semibold text-[#243010] hover:text-[#87A330]">${a.title}</h3>
             </a>`;
