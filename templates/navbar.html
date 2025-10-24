@@ -112,5 +112,54 @@
       </div>
     </div>
     
+    <script>
+      // Mobile menu toggle
+      const btn = document.querySelector("button.mobile-menu-button");
+      const menu = document.querySelector(".mobile-menu");
+    
+      btn.addEventListener("click", () => {
+        menu.classList.toggle("hidden");
+      });
+
+      // AJAX Logout functionality
+      {% if user.is_authenticated %}
+      function handleLogout(e) {
+        e.preventDefault();
+        
+        // Get CSRF token
+        const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]')?.value || 
+                         document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+        
+        fetch('{% url "userprofile:logout" %}', {
+          method: 'POST',
+          headers: {
+            'X-Requested-With': 'XMLHttpRequest',
+            'X-CSRFToken': csrfToken,
+            'Content-Type': 'application/json',
+          }
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            // Show success message briefly
+            alert(data.message);
+            // Redirect to login page
+            window.location.href = data.redirect_url;
+          } else {
+            alert('Logout failed. Please try again.');
+          }
+        })
+        .catch(error => {
+          console.error('Error:', error);
+          // Fallback to regular logout
+          window.location.href = '{% url "userprofile:logout" %}';
+        });
+      }
+
+      // Attach event listeners to logout buttons
+      document.getElementById('logout-btn')?.addEventListener('click', handleLogout);
+      document.getElementById('logout-btn-mobile')?.addEventListener('click', handleLogout);
+      {% endif %}
+    </script>
     
 </nav>
