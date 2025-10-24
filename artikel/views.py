@@ -8,6 +8,7 @@ from django.contrib.auth.decorators import login_required
 import random as py_random
 from django.views.decorators.http import require_POST
 from django.db import models
+from django.templatetags.static import static
 
 # =========================================================
 # 🔹 HALAMAN UTAMA ARTIKEL
@@ -180,7 +181,7 @@ def get_random_recommendations(request):
             {
                 "id": str(a.id),
                 "title": a.title,
-                "image": a.image if a.image else "",
+                "image": a.image or static('image/no-artikel.png'), 
             }
             for a in artikels
         ]
