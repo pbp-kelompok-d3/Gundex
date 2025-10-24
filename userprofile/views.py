@@ -141,14 +141,14 @@ def logout_view(request):
         return JsonResponse({
             'success': True,
             'message': f'Goodbye, {username}! You have been logged out.',
-            'redirect_url': reverse('userprofile:login')
+            'redirect_url': reverse('main:show_main')
         })
     else:
         username = request.user.username
         auth_logout(request)
         
         # Clear cookies and redirect
-        response = redirect('userprofile:login')
+        response = redirect('main:show_main')
         response.delete_cookie('last_login')
         response.delete_cookie('registration_success')
         
