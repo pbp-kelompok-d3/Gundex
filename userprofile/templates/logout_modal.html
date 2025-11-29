@@ -1,0 +1,181 @@
+<!-- Logout Confirmation Modal -->
+<div id="logout-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-[10001] flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full mx-4 transform transition-all">
+        <!-- Modal Header -->
+        <div class="px-6 py-4 border-b border-gray-200">
+            <div class="flex items-center justify-between">
+                <h3 class="text-xl font-semibold text-gray-900 flex items-center">
+                    <span class="text-2xl mr-3"></span>
+                    Confirm Logout
+                </h3>
+                <button id="close-logout-modal" class="text-gray-400 hover:text-gray-600 transition-colors">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        
+        <!-- Modal Body -->
+        <div class="px-6 py-6">
+            <div class="text-center">
+                <div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-red-100 mb-4">
+                    <svg class="h-8 w-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+                    </svg>
+                </div>
+                <h4 class="text-lg font-medium text-gray-900 mb-2">
+                    Are you sure you want to logout?
+                </h4>
+                <p class="text-sm text-gray-600 mb-6">
+                    You'll need to sign in again to access your hiking profile and wishlist.
+                </p>
+            </div>
+            
+            <!-- Loading Spinner (Hidden by default) -->
+            <div id="logout-loading" class="hidden text-center mb-4">
+                <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-red-600"></div>
+                <p class="mt-2 text-sm text-gray-600">Logging you out...</p>
+            </div>
+        </div>
+        
+        <!-- Modal Footer -->
+        <div class="px-6 py-4 border-t border-gray-200 flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-3 space-y-3 space-y-reverse sm:space-y-0">
+            <button id="cancel-logout" class="w-full sm:w-auto px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors">
+                Cancel
+            </button>
+            <button id="confirm-logout" class="w-full sm:w-auto px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-medium rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors">
+                Yes, Logout
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Modal elements
+    const logoutModal = document.getElementById('logout-modal');
+    const closeLogoutModal = document.getElementById('close-logout-modal');
+    const cancelLogout = document.getElementById('cancel-logout');
+    const confirmLogout = document.getElementById('confirm-logout');
+    const logoutLoading = document.getElementById('logout-loading');
+
+    // Show modal function
+    window.showLogoutModal = function() {
+        logoutModal.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+    };
+
+    // Hide modal function
+    function hideLogoutModal() {
+        logoutModal.classList.add('hidden');
+        document.body.style.overflow = 'auto';
+        logoutLoading.classList.add('hidden');
+        
+        // Reset button states
+        confirmLogout.disabled = false;
+        cancelLogout.disabled = false;
+    }
+
+    // Event listeners to hide modal
+    closeLogoutModal?.addEventListener('click', hideLogoutModal);
+    cancelLogout?.addEventListener('click', hideLogoutModal);
+
+    // Close modal when clicking outside
+    logoutModal?.addEventListener('click', function(e) {
+        if (e.target === logoutModal) {
+            hideLogoutModal();
+        }
+    });
+
+    // Close modal with Escape key
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && !logoutModal.classList.contains('hidden')) {
+            hideLogoutModal();
+        }
+    });
+
+    // CSRF Token helper
+    function getCsrfToken() {
+        const cookieValue = document.cookie
+            .split('; ')
+            .find(row => row.startsWith('csrftoken='))
+            ?.split('=')[1] || 
+            document.querySelector('[name=csrfmiddlewaretoken]')?.value || 
+            document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+        return cookieValue;
+    }
+
+    // Handle logout confirmation
+    confirmLogout?.addEventListener('click', async function() {
+        try {
+            // Show loading state
+            logoutLoading.classList.remove('hidden');
+            confirmLogout.disabled = true;
+            cancelLogout.disabled = true;
+            
+            // Show loading toast
+            if (window.showToast) {
+                window.showToast('Logging you out...', 'info');
+            }
+
+            const response = await fetch('{% url "userprofile:logout" %}', {
+                method: 'POST',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRFToken': getCsrfToken(),
+                    'Content-Type': 'application/json',
+                },
+                credentials: 'same-origin'
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                if (data.success) {
+                    // Show success message
+                    logoutLoading.innerHTML = `
+                        <div class="text-center">
+                            <div class="inline-flex items-center justify-center h-8 w-8 rounded-full bg-green-100 mb-2">
+                                <svg class="h-5 w-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                </svg>
+                            </div>
+                            <p class="text-sm text-gray-600">${data.message}</p>
+                        </div>
+                    `;
+                    
+                    // Show success toast
+                    if (window.showToast) {
+                        window.showToast(data.message, 'success');
+                    }
+                    
+                    // Redirect after delay
+                    setTimeout(() => {
+                        window.location.href = data.redirect_url;
+                    }, 1500);
+                } else {
+                    throw new Error('Logout failed');
+                }
+            } else {
+                throw new Error('Network error');
+            }
+        } catch (error) {
+            console.error('Logout error:', error);
+            logoutLoading.classList.add('hidden');
+            
+            if (window.showToast) {
+                window.showToast('Logout failed. Redirecting...', 'error');
+            }
+            
+            // Fallback: redirect to logout URL
+            setTimeout(() => {
+                window.location.href = '{% url "userprofile:logout" %}';
+            }, 1000);
+            
+            // Reset button states
+            confirmLogout.disabled = false;
+            cancelLogout.disabled = false;
+        }
+    });
+});
+</script>
