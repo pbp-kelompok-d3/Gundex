@@ -1,35 +1,38 @@
+from random import random
 from django.shortcuts import render, redirect, reverse, get_object_or_404
-from django.http import HttpResponse, JsonResponse, HttpResponseForbidden, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, HttpResponseForbidden, JsonResponse
+from artikel.models import Artikel
 from django.views.decorators.csrf import csrf_exempt
-from django.views.decorators.http import require_POST
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.core import serializers
+import random as py_random
+from django.views.decorators.http import require_POST
 from django.db import models
 from django.templatetags.static import static
 from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
-from artikel.models import Artikel
-import random as py_random
-import uuid
-import os
 import json
+import os
+from django.core import serializers
+from django.contrib import messages
+from django.core.paginator import Paginator
 
 # =========================================================
-# 🔹 HALAMAN UTAMA ARTIKEL (Web)
+# 🔹 HALAMAN UTAMA ARTIKEL
 # =========================================================
 def show_artikel(request):
     latest_artikels = Artikel.objects.order_by('-created_at')[:5]
     popular_artikels = Artikel.objects.order_by('-views')[:9]
-    hottest_artikels = Artikel.objects.annotate(
-        like_count=models.Count('likes')
-    ).order_by('-like_count', '-created_at')[:5]
-
+    hottest_artikels = Artikel.objects.annotate(like_count=models.Count('likes')).order_by('-like_count', '-created_at')[:5]
     recommended_artikels = list(Artikel.objects.all())
     py_random.shuffle(recommended_artikels)
     recommended_artikels = recommended_artikels[:7]
 
-    is_admin = getattr(request.user, 'is_admin', False) if request.user.is_authenticated else False
-
+    is_admin = False
+    if request.user.is_authenticated:
+        # cek jika pakai userprofile atau fallback ke is_staff bawaan
+        if hasattr(request.user, 'is_admin'):
+            is_admin = request.user.is_admin
     return render(request, 'full_artikel.html', {
         'latest_artikels': latest_artikels,
         'recommended_artikels': recommended_artikels,
@@ -40,7 +43,14 @@ def show_artikel(request):
 
 
 # =========================================================
-# 🔹 DETAIL ARTIKEL (Web)
+# 🔹 HALAMAN INDEX ARTIKEL
+# =========================================================
+def index(request):
+    return render(request, 'full_artikel.html')
+
+
+# =========================================================
+# 🔹 DETAIL ARTIKEL
 # =========================================================
 @login_required
 def artikel_detail(request, id):
@@ -54,60 +64,104 @@ def artikel_detail(request, id):
 
 
 # =========================================================
-# 🔹 CREATE ARTIKEL (Web)
+# 🔹 CREATE ARTIKEL (Admin Only)
 # =========================================================
 @login_required
 @csrf_exempt
 def create_artikel(request):
-    if not getattr(request.user, 'is_admin', False):
+    if not request.user.is_admin:
         return HttpResponseForbidden("Kamu tidak memiliki izin untuk membuat artikel.")
 
     if request.method != "POST":
-        return JsonResponse({'status': 'error', 'message': 'Only POST allowed.'}, status=405)
+        return JsonResponse({
+            "status": "error",
+            "message": "Invalid request method. Only POST allowed."
+        }, status=405)
 
-    title = request.POST.get("title", "").strip()
-    description = request.POST.get("description", "").strip()
-    image = request.POST.get("image", "").strip()
+    try:
+        title = request.POST.get("title", "")
+        description = request.POST.get("description", "")
+        image = request.POST.get("image")
 
-    if not title or not description:
-        return JsonResponse({'status': 'error', 'message': 'Judul dan deskripsi wajib diisi.'}, status=400)
+        if not title or not description:
+            return JsonResponse({
+                "status": "error",
+                "message": "Judul dan deskripsi wajib diisi."
+            }, status=400)
 
-    artikel = Artikel.objects.create(title=title, description=description, image=image)
-    return JsonResponse({'status': 'success', 'message': 'Artikel berhasil dibuat.', 'id': str(artikel.id)}, status=201)
+        new_artikel = Artikel.objects.create(
+            title=title,
+            description=description,
+            image=image
+        )
 
+        return JsonResponse({
+            "status": "success",
+            "message": "Artikel berhasil dibuat!",
+            "artikel_id": new_artikel.id
+        }, status=201)
 
-# =========================================================
-# 🔹 CREATE ARTIKEL (Flutter / REST API)
-# =========================================================
-@csrf_exempt
-@require_POST
+    except Exception as e:
+        return JsonResponse({
+            "status": "error",
+            "message": f"Terjadi kesalahan internal: {str(e)}"
+        }, status=500)
+
 def create_artikel_flutter(request):
     try:
         title = request.POST.get("title", "").strip()
         description = request.POST.get("description", "").strip()
         image = request.FILES.get('image')
 
+        # Validasi input
         if not title or not description:
-            return JsonResponse({'status': 'error', 'message': 'Title and description are required.'}, status=400)
+            return JsonResponse({
+                'status': 'error',
+                'message': 'Title and description are required.'
+            }, status=400)
 
-        image_path = None
         if image:
-            allowed_ext = ['.jpg', '.jpeg', '.png', '.gif', '.webp']
-            ext = os.path.splitext(image.name)[1].lower()
-            if ext not in allowed_ext:
-                return JsonResponse({'status': 'error', 'message': f'Unsupported image format. Allowed: {", ".join(allowed_ext)}.'}, status=400)
-            filename = f"artikels/{uuid.uuid4()}{ext}"
+            # Validasi format gambar
+            allowed_extensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp']
+            file_extension = os.path.splitext(image.name)[1].lower()
+
+            if file_extension not in allowed_extensions:
+                return JsonResponse({
+                    'status': 'error',
+                    'message': f'Unsupported image format. Allowed formats are: {", ".join(allowed_extensions)}.'
+                }, status=400)
+
+            # Buat path penyimpanan unik
+            filename = f"artikels/{uuid.uuid4()}{file_extension}"
+
+            # Simpan file
             path = default_storage.save(filename, ContentFile(image.read()))
             image_path = path
+        else:
+            image_path = None
 
-        artikel = Artikel.objects.create(title=title, description=description, image=image_path)
-        return JsonResponse({'status': 'success', 'message': 'Artikel created successfully.', 'id': str(artikel.id)}, status=201)
+        # Buat artikel baru
+        new_artikel = Artikel(
+            title=title,
+            description=description,
+            image=image_path  # Simpan path gambar
+        )
+        new_artikel.save()
+
+        return JsonResponse({
+            'status': 'success',
+            'message': 'Artikel created successfully.',
+            'artikel_id': new_artikel.id
+        }, status=201)
+
     except Exception as e:
-        return JsonResponse({'status': 'error', 'message': f'Internal error: {str(e)}'}, status=500)
-
+        return JsonResponse({
+            'status': 'error',
+            'message': f'An error occurred: {str(e)}'
+        }, status=500)
 
 # =========================================================
-# 🔹 EDIT ARTIKEL (Web)
+# 🔹 EDIT ARTIKEL (Admin Only + AJAX)
 # =========================================================
 @login_required
 @csrf_exempt
@@ -120,7 +174,7 @@ def edit_artikel(request, id):
     if request.method == "POST" and request.headers.get('x-requested-with') == 'XMLHttpRequest':
         title = request.POST.get('title', '').strip()
         description = request.POST.get('description', '').strip()
-        image = request.POST.get('image', '').strip()
+        image = request.POST.get('image', '').strip()  # URL gambar
 
         if not title or not description:
             return JsonResponse({'status': 'error', 'message': 'Judul dan deskripsi wajib diisi.'}, status=400)
@@ -129,117 +183,176 @@ def edit_artikel(request, id):
         artikel.description = description
         artikel.image = image
         artikel.save()
-        return JsonResponse({'status': 'success', 'message': 'Artikel berhasil diperbarui.'})
+        return JsonResponse({'status': 'success', 'message': 'Artikel berhasil diperbarui!'})
+
     return JsonResponse({'status': 'error', 'message': 'Gunakan AJAX POST untuk mengedit.'}, status=405)
 
-
-# =========================================================
-# 🔹 EDIT ARTIKEL (Flutter)
-# =========================================================
-@login_required
 @csrf_exempt
 def edit_artikel_flutter(request, artikel_id):
-    if not getattr(request.user, 'is_admin', False):
-        return HttpResponseForbidden("Hanya admin yang dapat mengedit artikel.")
-    
-    artikel = get_object_or_404(Artikel, pk=artikel_id)
-
     if request.method == 'POST':
-        artikel.title = request.POST.get('title', artikel.title)
-        artikel.description = request.POST.get('description', artikel.description)
+        artikel = get_object_or_404(Artikel, pk=artikel_id)
+        
+        # Update title dan description
+        artikel.title = request.POST.get('title')
+        artikel.description = request.POST.get('description')
+        
+        # Update gambar jika ada
         if 'image' in request.FILES:
             artikel.image = request.FILES['image']
+        
         artikel.save()
-        return JsonResponse({'status': 'success', 'message': 'Artikel berhasil diperbarui.'})
-    return JsonResponse({'status': 'error', 'message': 'Only POST allowed.'}, status=405)
-
-
+        
+        return JsonResponse({'status': 'success'})
+    
+    return JsonResponse({'status': 'error'}, status=400)
 # =========================================================
-# 🔹 DELETE ARTIKEL (Web + API)
+# 🔹 DELETE ARTIKEL (Admin Only + AJAX)
 # =========================================================
 @login_required
 @csrf_exempt
 def delete_artikel(request, id):
-    if not getattr(request.user, 'is_admin', False):
+    if not request.user.is_admin:
         return HttpResponseForbidden("Kamu tidak memiliki izin untuk menghapus artikel ini.")
 
     artikel = get_object_or_404(Artikel, pk=id)
+    try:
+        # DELETE via AJAX
+        if request.method == 'DELETE' or (request.method == 'POST' and request.headers.get('x-requested-with') == 'XMLHttpRequest'):
+            artikel.delete()
+            return JsonResponse({'status': 'success', 'message': 'Artikel berhasil dihapus.'}, status=200)
 
-    if request.method in ['DELETE', 'POST']:
-        artikel.delete()
-        return JsonResponse({'status': 'success', 'message': 'Artikel berhasil dihapus.'})
-    return JsonResponse({'status': 'error', 'message': 'Gunakan method POST atau DELETE.'}, status=405)
+        # DELETE via POST form biasa
+        elif request.method == 'POST':
+            artikel.delete()
+            return HttpResponseRedirect(reverse('artikel:show_artikel'))
+
+        else:
+            return JsonResponse({'error': 'Gunakan method POST atau DELETE.'}, status=405)
+
+    except Exception as e:
+        print(f"Error deleting artikel: {e}")
+        return JsonResponse({'error': f'Kesalahan internal: {str(e)}'}, status=500)
+
+def delete_artikel_flutter(request, id):
+    if request.method != "DELETE":
+        return JsonResponse({"error": "DELETE required"}, status=405)
+
+    artikel = get_object_or_404(Artikel, pk=id)
+    artikel.delete()
+
+    return JsonResponse({"status": "success"})
+# =========================================================
+# 🔹 EDIT MODAL RENDER (untuk AJAX load)
+# =========================================================
+@login_required
+def edit_artikel_modal(request, id):
+    if not request.user.is_admin:
+        return HttpResponseForbidden("Kamu bukan admin.")
+    artikel = get_object_or_404(Artikel, pk=id)
+    return render(request, "edit_artikel.html", {"artikel": artikel})
 
 
 # =========================================================
-# 🔹 LIKE ARTIKEL (Web + API)
+# 🔹 REKOMENDASI ACAK (AJAX refresh)
 # =========================================================
+def get_random_recommendations(request):
+    """Return new random recommended artikels (AJAX refresh)"""
+    if request.method == "GET":
+        artikels = list(Artikel.objects.all())
+        py_random.shuffle(artikels)
+        artikels = artikels[:6]  # ambil 6 acak
+        data = [
+            {
+                "id": str(a.id),
+                "title": a.title,
+                "image": a.image or static('image/no-artikel.png'), 
+            }
+            for a in artikels
+        ]
+        return JsonResponse({"artikels": data})
+    return JsonResponse({"error": "Gunakan method GET"}, status=405)
+
 @login_required
 @require_POST
 @csrf_exempt
 def like_artikel(request, id):
     artikel = get_object_or_404(Artikel, pk=id)
     user = request.user
-    liked = False
 
     if artikel.likes.filter(id=user.id).exists():
         artikel.likes.remove(user)
+        liked = False
     else:
         artikel.likes.add(user)
         liked = True
 
-    return JsonResponse({'status': 'success', 'liked': liked, 'total_likes': artikel.total_likes()})
+    return JsonResponse({
+        "status": "success",
+        "liked": liked,
+        "total_likes": artikel.total_likes()
+    })
 
 
-# =========================================================
-# 🔹 Rekomendasi Acak (Web + Flutter)
-# =========================================================
-def get_random_recommendations(request):
-    if request.method != "GET":
-        return JsonResponse({'error': 'Gunakan method GET.'}, status=405)
 
-    artikels = list(Artikel.objects.all())
-    py_random.shuffle(artikels)
-    artikels = artikels[:6]
+def show_xml(request):
+   data = Artikel.objects.all()
+   return HttpResponse(serializers.serialize("xml", data), content_type="application/xml")
 
-    data = [{
-        "id": str(a.id),
-        "title": a.title,
-        "image": a.image if (a.image and a.image.startswith("http")) else request.build_absolute_uri(a.image.url) if a.image else static('image/no-artikel.png')
-    } for a in artikels]
+# menampilkan artikel berdasarkan id dalam format JSON
+def show_json(request):
+    artikels = Artikel.objects.all().order_by("-created_at")
 
-    return JsonResponse({'artikels': data})
+    data = []
+    for a in artikels:
+        # absolute image url
+        image_url = None
+        if a.image:
+            # URLField → string (langsung absolut jika sudah absolut)
+            if a.image.startswith("http"):
+                image_url = a.image
+            else:
+                image_url = request.build_absolute_uri(a.image)
 
+        data.append({
+            "id": str(a.id),
+            "title": a.title,
+            "description": a.description,
+            "image": image_url,
+            "views": a.views,
+            "likes": a.total_likes(),
+            "created_at": a.created_at.isoformat(),
+        })
 
-# =========================================================
-# 🔹 JSON & XML (untuk API Flutter)
-# =========================================================
-def show_json_all(request):
-    data = Artikel.objects.all()
-    serialized = serializers.serialize("json", data)
-    return HttpResponse(serialized, content_type="application/json")
+    return JsonResponse(data, safe=False)
 
-
-def show_json_by_id(request, id):
-    artikel = get_object_or_404(Artikel, pk=id)
-    serialized = serializers.serialize("json", [artikel])
-    return HttpResponse(serialized, content_type="application/json")
-
-
-def show_xml_all(request):
-    data = Artikel.objects.all()
-    serialized = serializers.serialize("xml", data)
-    return HttpResponse(serialized, content_type="application/xml")
-
-
+# menampilkan artikel berdasarkan id dalam format JSON
 def show_xml_by_id(request, id):
-    artikel = Artikel.objects.filter(pk=id)
-    serialized = serializers.serialize("xml", artikel)
-    return HttpResponse(serialized, content_type="application/xml")
+    data = Artikel.objects.filter(pk=id)
+    return HttpResponse(serializers.serialize("xml", data), content_type="application/xml")
 
+# menampilkan artikel berdasarkan id dalam format JSON
+def show_json_by_id(request, id):
+    try:
+        a = Artikel.objects.get(pk=id)
 
-# =========================================================
-# 🔹 INDEX PAGE (fallback)
-# =========================================================
-def index(request):
-    return render(request, 'full_artikel.html')
+        image_url = None
+        if a.image:
+            if a.image.startswith("http"):
+                image_url = a.image
+            else:
+                image_url = request.build_absolute_uri(a.image)
+
+        data = {
+            "id": str(a.id),
+            "title": a.title,
+            "description": a.description,
+            "image": image_url,
+            "views": a.views,
+            "likes": a.total_likes(),
+            "created_at": a.created_at.isoformat(),
+        }
+
+        return JsonResponse(data)
+
+    except Artikel.DoesNotExist:
+        return JsonResponse({"error": "Not found"}, status=404)
