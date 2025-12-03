@@ -4,15 +4,20 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="csrf-token" content="{{ csrf_token }}">
-    {% block meta %} {% endblock meta %}
+    {% block meta %}{% endblock meta %}
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="{% static 'css/global.css' %}"/>
   </head>
 
-<body>
+  <!-- Tambahkan layout flex ke body -->
+  <body class="flex flex-col min-h-screen">
     {% include 'navbar.html' %}
-    {% block content %} {% endblock content %}
+
+    <!-- Bungkus konten dalam flex-grow agar mengisi ruang tengah -->
+    <main class="flex-grow">
+      {% block content %}{% endblock content %}
+    </main>
+
     {% include 'footer.html' %}
     
     <!-- Include logout modal for authenticated users -->
@@ -22,6 +27,36 @@
     
     <!-- Toast Container -->
     <div id="toast-container" class="fixed top-5 right-5 z-[10000] space-y-2"></div>
+
+     <style>
+        :root {
+            --dark-moss-green: #243010;
+            --olive-green: #87A330;
+            --android-green: #A1C349;
+            --sage-green: #CAD593;
+            --pine-tree-green: #2A3C24;
+        }
+        
+        .btn-primary {
+            background-color: var(--android-green);
+            color: white;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--olive-green);
+            transform: translateY(-2px);
+        }
+        
+        .card-mountain {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            overflow: hidden;
+            transition: all 0.3s ease;
+            border: 1px solid var(--sage-green);
+        }
+    </style>
 
   <script>
   // Enhanced Toast System for GunDex

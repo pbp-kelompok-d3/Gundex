@@ -1,40 +1,54 @@
 {% extends 'base.html' %}
 {% block content %}
 {% include 'navbar.html' %}
+<div class="min-h-screen bg-gradient-to-b from-white to-[#CAD593]/20">
 <div class="container mx-auto p-4 md:p-8 pt-20 md:pt-24">
     
     <!-- Judul Halaman -->
-    <h1 class="text-3xl font-bold text-[#2A3C24] mb-6">
-        Wishlist Pendakian {{ nama_user }}
-    </h1>
+    <div class="text-center mb-12">
+        <h1 class="text-4xl font-bold text-[#243010] mb-4">
+            Wishlist Pendakian {{ nama_user }}
+        </h1>
+        <p class="text-lg text-gray-600">
+            Daftar gunung yang ingin didaki oleh {{ nama_user }}
+        </p>
+    </div>
 
     {% if not items %}
         <!-- Box "Wishlist Kosong" -->
-        <div class="bg-[#A1C349]/20 border-l-4 border-[#87A330] text-[#243010] p-6 rounded-lg" role="alert">
-            <p class="font-bold text-lg mb-2">Wishlist Kosong</p>
-            <p>Kamu belum menambahkan gunung ke wishlist. Mulai <a href="{% url 'main:show_main' %}" class="underline text-[#87A330] hover:text-[#A1C349] font-semibold transition-colors">jelajahi gunung</a>!</p>
+        <div class="max-w-2xl mx-auto bg-[#A1C349]/20 border-l-4 border-[#87A330] text-[#243010] p-8 rounded-xl text-center" role="alert">
+            <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-[#87A330] flex items-center justify-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                </svg>
+            </div>
+            <p class="font-bold text-xl mb-2">Wishlist Kosong</p>
+            <p class="mb-4">Kamu belum menambahkan gunung ke wishlist.</p>
+            <a href="{% url 'main:show_main' %}" class="inline-block bg-[#87A330] hover:bg-[#A1C349] text-white font-medium py-2 px-6 rounded-lg transition-colors">
+                Jelajahi Gunung
+            </a>
         </div>
     {% else %}
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             
             {% for item in items %}
-            <div id="item-card-{{ item.pk }}" class="bg-white rounded-lg shadow-lg overflow-hidden transition-all duration-300 transform hover:-translate-y-2 hover:shadow-xl border-2 border-transparent hover:border-[#A1C349]">
+            <div id="item-card-{{ item.pk }}" class="bg-white rounded-xl shadow-lg overflow-hidden transition-all duration-300 transform hover:-translate-y-2 hover:shadow-xl border-2 border-transparent hover:border-[#A1C349]">
                 <img class="h-48 w-full object-cover" src="{{ item.gunung.foto }}" alt="Foto {{ item.gunung.nama }}"> 
                 
                 <div class="p-6">
                     <!-- Judul Gunung -->
-                    <h2 class="text-2xl font-bold text-[#2A3C24] mb-2">{{ item.gunung.nama }}</h2>
+                    <h2 class="text-2xl font-bold text-[#243010] mb-2">{{ item.gunung.nama }}</h2>
                     
                     <!-- Info Lokasi/Ketinggian -->
                     <p class="text-[#87A330] font-semibold mb-3">{{ item.gunung.lokasi }} - {{ item.gunung.ketinggian }} mdpl</p>
                     
                     <!-- Info Tanggal Ditambahkan -->
-                    <p class="text-sm text-[#CAD593] mb-4">Ditambahkan pada: {{ item.added_at|date:"d M Y" }}</p>
+                    <p class="text-sm text-gray-500 mb-4">Ditambahkan pada: {{ item.added_at|date:"d M Y" }}</p>
                     
                     <!-- Tombol Hapus -->
                     <button 
                         type="button" 
-                        class="remove-btn bg-[#87A330] hover:bg-[#243010] text-white font-bold py-2 px-4 rounded w-full transition-all duration-300 ease-in-out transform hover:scale-105"
+                        class="remove-btn bg-[#87A330] hover:bg-[#243010] text-white font-bold py-3 px-4 rounded-lg w-full transition-all duration-300 ease-in-out transform hover:scale-105"
                         data-item-id="{{ item.pk }}">
                         Hapus dari Wishlist
                     </button>
@@ -44,6 +58,7 @@
 
         </div>
     {% endif %}
+</div>
 </div>
 
 

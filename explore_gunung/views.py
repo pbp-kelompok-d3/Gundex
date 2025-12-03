@@ -1,16 +1,18 @@
-from django.http import JsonResponse, HttpResponseRedirect
+from django.http import JsonResponse, HttpResponseRedirect, HttpResponse
 from django.urls import reverse
 from explore_gunung.models import Gunung
 from django.db.models import Q
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from explore_gunung.forms import GunungForm
+from django.views.decorators.csrf import csrf_exempt
 import json
+import requests
 
 def show_json(request):
     query = request.GET.get('q', '')
     page = int(request.GET.get('page', 1))
-    limit = int(request.GET.get('limit', 6))  # default 6 item per page
+    limit = int(request.GET.get('limit', 6))  
 
     gunung_list = Gunung.objects.all()
 
@@ -20,7 +22,6 @@ def show_json(request):
             Q(provinsi__icontains=query)
         )
 
-    # Pagination: ambil data sesuai halaman
     start = (page - 1) * limit
     end = start + limit
     paginated_gunung = gunung_list[start:end]
@@ -37,7 +38,6 @@ def show_json(request):
         for g in paginated_gunung
     ]
 
-    # Kirim juga apakah masih ada halaman berikutnya
     has_more = end < gunung_list.count()
 
     return JsonResponse({'results': data, 'has_more': has_more, 'is_admin': getattr(request.user, 'is_admin', False), 'is_authenticated': request.user.is_authenticated, })
@@ -52,20 +52,17 @@ def show_gunung(request, id):
 
     return render(request, "gunung_details.html", context)
 
+@csrf_exempt
 def edit_gunung(request, id):
     gunung = get_object_or_404(Gunung, pk=id)
     
     if request.method == 'POST':
         try:
-            # 1. BACA DATA DARI BODY JSON
             data = json.loads(request.body)
         except json.JSONDecodeError:
-            # Handle jika data bukan JSON yang valid
             return JsonResponse({'success': False, 'message': 'Invalid JSON format'}, status=400)
             
         
-        # 2. UPDATE INSTANCE TANPA MENGGUNAKAN FORM
-        # Karena kita menerima JSON, lebih mudah update manual
         gunung.nama = data.get('nama', gunung.nama)
         gunung.provinsi = data.get('provinsi', gunung.provinsi)
         gunung.ketinggian = data.get('ketinggian', gunung.ketinggian)
@@ -77,13 +74,11 @@ def edit_gunung(request, id):
 
         try:
             gunung.save()
-            # 3. KEMBALIKAN RESPON JSON SUKSES
             return JsonResponse({'success': True, 'message': 'Data berhasil disimpan'})
         except Exception as e:
             return JsonResponse({'success': False, 'message': f'Gagal menyimpan data: {str(e)}'}, status=500)
 
 
-    # Jika request bukan POST atau ingin melihat form edit
     form = GunungForm(instance=gunung)
     context = {
         'form': form
@@ -106,3 +101,74 @@ def delete_gunung(request, id):
     gunung = get_object_or_404(Gunung, pk=id)
     gunung.delete()
     return HttpResponseRedirect(reverse('main:show_main'))
+
+def delete_gunung_flutter(request, id):
+    if request.method == 'POST':
+        gunung = get_object_or_404(Gunung, pk=id)
+        
+        gunung.delete()
+        
+        return JsonResponse({
+            "status": "success",
+            "message": "Data gunung berhasil dihapus."
+        }, status=200)
+    
+    return JsonResponse({
+        "status": "error",
+        "message": "Invalid request method."
+    }, status=401)
+
+def json_all(request):
+    query = request.GET.get('q', '')
+    gunung_list = Gunung.objects.all()
+    is_admin_user = request.user.is_authenticated and request.user.is_superuser
+
+    if query:
+        gunung_list = gunung_list.filter(
+            Q(nama__icontains=query) |
+            Q(provinsi__icontains=query)
+        )
+    
+    data = [
+        {
+            'id': str(g.id),
+            'nama': g.nama,
+            'ketinggian': g.ketinggian,
+            'foto': g.foto,
+            'provinsi': g.provinsi,
+            'deskripsi': g.deksripsi,
+        }
+        for g in gunung_list
+    ]
+
+    return JsonResponse({'results': data, 'is_admin': is_admin_user, 'is_authenticated': request.user.is_authenticated})
+
+import requests
+from django.http import HttpResponse
+
+def proxy_image(request):
+    image_url = request.GET.get('url')
+    if not image_url:
+        return HttpResponse('No URL provided', status=400)
+    
+    try:
+        headers = {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+        }
+
+        response = requests.get(image_url, headers=headers, timeout=10)
+        response.raise_for_status()
+        
+        django_response = HttpResponse(
+            response.content,
+            content_type=response.headers.get('Content-Type', 'image/jpeg')
+        )
+        
+        django_response["Access-Control-Allow-Origin"] = "*" 
+        
+        return django_response
+
+    except requests.RequestException as e:
+        err_response = HttpResponse(f'Error fetching image: {str(e)}', status=500)
+        err_response["Access-Control-Allow-Origin"] = "*"
+        return err_response

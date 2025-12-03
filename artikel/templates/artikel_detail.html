@@ -44,7 +44,7 @@
 
     <div class="flex items-center gap-2 mt-6">
       <button id="likeBtn"
-        class="flex items-center gap-2 px-4 py-2 bg-[#F9FAF5] rounded-lg shadow hover:shadow-md border border-[#A1C349]">
+        class="flex items-center gap-2 px-4 py-2 bg-[#F9FAF5] rounded-lg shadow hover:shadow-md border border-[#A1C349] transition-all">
         <span id="likeIcon">❤️</span>
         <span id="likeText">{{ artikel.total_likes }} Suka</span>
       </button>
@@ -59,11 +59,11 @@
         {% if is_admin %}
         <div class="flex gap-3 mt-6">
           <button id="editBtn" 
-                  class="px-4 py-2 bg-[#A1C349] text-[#243010] font-semibold rounded-lg hover:bg-[#87A330]">
+                  class="px-4 py-2 bg-[#A1C349] text-[#243010] font-semibold rounded-lg hover:bg-[#87A330] transition-colors">
             ✏️ Edit Artikel
           </button>
           <button id="deleteBtn" 
-                  class="px-4 py-2 bg-[#D9534F] text-white font-semibold rounded-lg hover:bg-[#C9302C]">
+                  class="px-4 py-2 bg-red-600 text-white font-semibold rounded-lg hover:bg-red-700 transition-colors">
             🗑️ Hapus
           </button>
         </div>
