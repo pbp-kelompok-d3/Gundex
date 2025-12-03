@@ -1,4 +1,4 @@
-<nav class="fixed top-0 left-0 w-full bg-white border-b border-gray-200 shadow-sm z-50">
+<nav class="fixed top-0 left-0 w-full bg-white border-b border-gray-200 shadow-sm z-[9999]">
     <div class="max-w-7xl mx-auto px-6 lg:px-8">
       <div class="flex items-center justify-between h-16">
         <div class="flex items-center">
@@ -12,13 +12,13 @@
           <a href="{% url 'main:show_main' %}" class="text-gray-600 hover:text-gray-900 font-medium transition-colors">
             Explore
           </a>
-          <a href="#" class="text-gray-600 hover:text-gray-900 font-medium transition-colors">
+          <a href="{% url 'wishlist:show_wishlist' %}" class="text-gray-600 hover:text-gray-900 font-medium transition-colors">
             Wishlist
           </a>
           <a href="{% url 'logpendakian:list' %}" class="text-gray-600 hover:text-gray-900 font-medium transition-colors">
             Log Pendakian
           </a>
-          <a href="#" class="text-gray-600 hover:text-gray-900 font-medium transition-colors">
+          <a href="{% url 'artikel:show_artikel' %}" class="text-gray-600 hover:text-gray-900 font-medium transition-colors">
             Artikel
           </a>
         </div>
@@ -35,7 +35,7 @@
             <a href="{% url 'userprofile:edit_profile' %}" class="text-blue-600 hover:text-blue-700 font-medium transition-colors">
               Profile
             </a>
-            <button id="logout-btn" class="text-red-600 hover:text-red-700 font-medium transition-colors">
+            <button onclick="showLogoutModal()" class="text-red-600 hover:text-red-700 font-medium transition-colors">
               Logout
             </button>
           {% else %}
@@ -50,7 +50,11 @@
         
         <!-- Mobile Menu Button -->
         <div class="md:hidden flex items-center">
-          <button class="mobile-menu-button p-2 text-gray-600 hover:text-gray-900 transition-colors">
+          <button
+            class="mobile-menu-button p-2 text-gray-600 hover:text-gray-900 transition-colors"
+            onclick="toggleMobileMenu(event)"
+            type="button"
+          >
             <span class="sr-only">Open menu</span>
             <div class="w-6 h-6 flex flex-col justify-center items-center">
               <span class="bg-current block transition-all duration-300 ease-out h-0.5 w-6 rounded-sm"></span>
@@ -63,20 +67,20 @@
     </div>
     
     <!-- Mobile Menu -->
-    <div class="mobile-menu hidden md:hidden bg-white border-t border-gray-200">
+    <div class="mobile-menu hidden md:hidden bg-white border-t border-gray-200 absolute top-16 left-0 w-full shadow-lg z-[9998]">
       <div class="px-6 py-4 space-y-4">
         <!-- Mobile Navigation Links -->
         <div class="space-y-1">
           <a href="{% url 'main:show_main' %}" class="block text-gray-600 hover:text-gray-900 font-medium py-3 transition-colors">
             Explore
           </a>
-          <a href="#" class="block text-gray-600 hover:text-gray-900 font-medium py-3 transition-colors">
+          <a href="{% url 'wishlist:show_wishlist' %}" class="block text-gray-600 hover:text-gray-900 font-medium py-3 transition-colors">
             Wishlist
           </a>
           <a href="{% url 'logpendakian:list' %}" class="block text-gray-600 hover:text-gray-900 font-medium py-3 transition-colors">
             Log Pendakian
           </a>
-          <a href="#" class="block text-gray-600 hover:text-gray-900 font-medium py-3 transition-colors">
+          <a href="{% url 'artikel:show_artikel' %}" class="block text-gray-600 hover:text-gray-900 font-medium py-3 transition-colors">
             Artikel
           </a>
         </div>
@@ -93,7 +97,7 @@
             <a href="{% url 'userprofile:edit_profile' %}" class="block text-blue-600 hover:text-blue-700 font-medium py-3 transition-colors">
               Profile
             </a>
-            <button id="logout-btn-mobile" class="block text-red-600 hover:text-red-700 font-medium py-3 transition-colors w-full text-left">
+            <button onclick="showLogoutModal()" class="block text-red-600 hover:text-red-700 font-medium py-3 transition-colors w-full text-left">
               Logout
             </button>
           {% else %}
@@ -118,45 +122,5 @@
       btn.addEventListener("click", () => {
         menu.classList.toggle("hidden");
       });
-
-      // AJAX Logout functionality
-      {% if user.is_authenticated %}
-      function handleLogout(e) {
-        e.preventDefault();
-        
-        // Get CSRF token
-        const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]')?.value || 
-                         document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
-        
-        fetch('{% url "userprofile:logout" %}', {
-          method: 'POST',
-          headers: {
-            'X-Requested-With': 'XMLHttpRequest',
-            'X-CSRFToken': csrfToken,
-            'Content-Type': 'application/json',
-          }
-        })
-        .then(response => response.json())
-        .then(data => {
-          if (data.success) {
-            // Show success message briefly
-            alert(data.message);
-            // Redirect to login page
-            window.location.href = data.redirect_url;
-          } else {
-            alert('Logout failed. Please try again.');
-          }
-        })
-        .catch(error => {
-          console.error('Error:', error);
-          // Fallback to regular logout
-          window.location.href = '{% url "userprofile:logout" %}';
-        });
-      }
-
-      // Attach event listeners to logout buttons
-      document.getElementById('logout-btn')?.addEventListener('click', handleLogout);
-      document.getElementById('logout-btn-mobile')?.addEventListener('click', handleLogout);
-      {% endif %}
     </script>
 </nav>

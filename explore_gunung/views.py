@@ -121,6 +121,7 @@ def delete_gunung_flutter(request, id):
 def json_all(request):
     query = request.GET.get('q', '')
     gunung_list = Gunung.objects.all()
+    is_admin_user = request.user.is_authenticated and request.user.is_superuser
 
     if query:
         gunung_list = gunung_list.filter(
@@ -140,7 +141,7 @@ def json_all(request):
         for g in gunung_list
     ]
 
-    return JsonResponse({'results': data})
+    return JsonResponse({'results': data, 'is_admin': is_admin_user, 'is_authenticated': request.user.is_authenticated})
 
 import requests
 from django.http import HttpResponse
