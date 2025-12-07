@@ -38,6 +38,7 @@ ALLOWED_HOSTS = [
     "127.0.0.1",
     "10.0.2.2",
     "rasyad-zulham-gundex.pbp.cs.ui.ac.id",
+    "[::1]",
 ]
 
 CSRF_TRUSTED_ORIGINS = [
@@ -46,9 +47,6 @@ CSRF_TRUSTED_ORIGINS = [
     "http://10.0.2.2:*",
     "https://rasyad-zulham-gundex.pbp.cs.ui.ac.id",
 ]
-
-
-
 
 # Application definition
 
@@ -155,7 +153,8 @@ USE_I18N = True
 
 USE_TZ = True
 
-
+MEDIA_URL = "/media/"
+MEDIA_ROOT = BASE_DIR / "media"
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
@@ -171,7 +170,8 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOW_CREDENTIALS = True
-CSRF_COOKIE_SECURE = True
-SESSION_COOKIE_SECURE = True
-CSRF_COOKIE_SAMESITE = 'None'
-SESSION_COOKIE_SAMESITE = 'None'
+CSRF_COOKIE_SECURE = False
+SESSION_COOKIE_SECURE = False
+
+CSRF_COOKIE_SAMESITE = 'Lax'
+SESSION_COOKIE_SAMESITE = 'Lax'

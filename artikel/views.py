@@ -17,6 +17,10 @@ import os
 from django.core import serializers
 from django.contrib import messages
 from django.core.paginator import Paginator
+import uuid
+from django.conf import settings
+
+
 
 # =========================================================
 # 🔹 HALAMAN UTAMA ARTIKEL
@@ -107,7 +111,7 @@ def create_artikel(request):
             "status": "error",
             "message": f"Terjadi kesalahan internal: {str(e)}"
         }, status=500)
-@login_required
+
 @csrf_exempt
 def create_artikel_flutter(request):
     try:
@@ -188,25 +192,28 @@ def edit_artikel(request, id):
         return JsonResponse({'status': 'success', 'message': 'Artikel berhasil diperbarui!'})
 
     return JsonResponse({'status': 'error', 'message': 'Gunakan AJAX POST untuk mengedit.'}, status=405)
-@login_required
+
 @csrf_exempt
 def edit_artikel_flutter(request, id):
-    if request.method == 'POST':
-        artikel = get_object_or_404(Artikel, pk=id)
-        
-        # Update title dan description
-        artikel.title = request.POST.get('title')
-        artikel.description = request.POST.get('description')
-        
-        # Update gambar jika ada
-        if 'image' in request.FILES:
-            artikel.image = request.FILES['image']
-        
-        artikel.save()
-        
-        return JsonResponse({'status': 'success'})
-    
-    return JsonResponse({'status': 'error'}, status=400)
+    artikel = get_object_or_404(Artikel, pk=id)
+
+    if request.method != 'POST':
+        return JsonResponse({'status': 'error', 'message': 'POST required'}, status=405)
+
+    artikel.title = request.POST.get('title', artikel.title)
+    artikel.description = request.POST.get('description', artikel.description)
+
+    # Jika ada gambar baru → simpan seperti create
+    if 'image' in request.FILES:
+        image = request.FILES['image']
+        extension = os.path.splitext(image.name)[1].lower()
+        filename = f"artikels/{uuid.uuid4()}{extension}"
+        path = default_storage.save(filename, ContentFile(image.read()))
+        artikel.image = path
+
+    artikel.save()
+
+    return JsonResponse({'status': 'success'})
 # =========================================================
 # 🔹 DELETE ARTIKEL (Admin Only + AJAX)
 # =========================================================
@@ -235,7 +242,6 @@ def delete_artikel(request, id):
         print(f"Error deleting artikel: {e}")
         return JsonResponse({'error': f'Kesalahan internal: {str(e)}'}, status=500)
 
-@login_required
 @csrf_exempt
 def delete_artikel_flutter(request, id):
     if request.method != "DELETE":
@@ -315,7 +321,7 @@ def show_json(request):
             if a.image.startswith("http"):
                 image_url = a.image
             else:
-                image_url = request.build_absolute_uri(a.image)
+                image_url = request.build_absolute_uri(settings.MEDIA_URL + a.image.lstrip("/"))
 
         data.append({
             "id": str(a.id),
@@ -344,8 +350,7 @@ def show_json_by_id(request, id):
             if a.image.startswith("http"):
                 image_url = a.image
             else:
-                image_url = request.build_absolute_uri(a.image)
-
+                image_url = request.build_absolute_uri(settings.MEDIA_URL + a.image.lstrip("/"))
         data = {
             "id": str(a.id),
             "title": a.title,

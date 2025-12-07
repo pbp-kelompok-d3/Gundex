@@ -18,10 +18,10 @@ urlpatterns = [
     path("get-random-recommendations/", views.get_random_recommendations, name="get_random_recommendations"),
     path("api/artikel/", views.show_json, name="api_list_artikel"),
     path("api/artikel/<uuid:id>/", views.show_json_by_id, name="api_artikel_detail"),
-    path("api/artikel/create/", views.create_artikel_flutter, name="api_create_artikel_flutter"),
-    path("api/artikel/<uuid:id>/edit/", views.edit_artikel_flutter, name="api_edit_artikel_flutter"),
-    path("api/artikel/<uuid:id>/delete/", views.delete_artikel_flutter, name="api_delete_artikel_flutter"),
+    path("api/flutter/<uuid:id>/edit/", views.edit_artikel_flutter, name="api_edit_artikel_flutter"),
+    path("api/flutter/<uuid:id>/delete/", views.delete_artikel_flutter, name="api_delete_artikel_flutter"),
     path("proxy/", views.proxy_image, name="proxy_image"),
+    path('api/flutter/create/', views.create_artikel_flutter, name='create_artikel_flutter'),
 ]
 
 if settings.DEBUG:

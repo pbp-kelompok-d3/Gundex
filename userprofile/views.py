@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from django.views.decorators.csrf import csrf_protect
+from django.views.decorators.csrf import csrf_protect, csrf_exempt
 from django.views.decorators.cache import never_cache
 from django.http import HttpResponseRedirect, JsonResponse
 from django.urls import reverse
@@ -141,14 +141,14 @@ def logout_view(request):
         return JsonResponse({
             'success': True,
             'message': f'Goodbye, {username}! You have been logged out.',
-            'redirect_url': reverse('userprofile:login')
+            'redirect_url': reverse('main:show_main')
         })
     else:
         username = request.user.username
         auth_logout(request)
         
         # Clear cookies and redirect
-        response = redirect('userprofile:login')
+        response = redirect('main:show_main')
         response.delete_cookie('last_login')
         response.delete_cookie('registration_success')
         
@@ -180,3 +180,188 @@ def edit_profile(request):
     }
     
     return render(request, 'edit_profile.html', context)
+
+
+# ============ Flutter Endpoints ============
+
+@csrf_exempt
+def flutter_login(request):
+    """Login endpoint specifically for Flutter mobile app"""
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        
+        if not username or not password:
+            return JsonResponse({
+                "status": False,
+                "message": "Username and password are required."
+            }, status=400)
+        
+        user = authenticate(request, username=username, password=password)
+        
+        if user is not None:
+            auth_login(request, user)
+            return JsonResponse({
+                "username": user.username,
+                "status": True,
+                "message": "Login successful!",
+                "user_data": {
+                    "username": user.username,
+                    "email": user.email,
+                    "first_name": user.first_name,
+                    "last_name": user.last_name,
+                    "bio": user.bio if user.bio else "",
+                    "is_admin": user.is_admin
+                }
+            }, status=200)
+        else:
+            return JsonResponse({
+                "status": False,
+                "message": "Invalid username or password."
+            }, status=401)
+    
+    return JsonResponse({
+        "status": False,
+        "message": "Invalid request method."
+    }, status=400)
+
+@csrf_exempt
+def flutter_register(request):
+    """Register endpoint specifically for Flutter mobile app"""
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        username = data.get('username')
+        email = data.get('email')
+        first_name = data.get('first_name')
+        last_name = data.get('last_name')
+        password1 = data.get('password1')
+        password2 = data.get('password2')
+        bio = data.get('bio', '')
+
+        # Validation
+        if password1 != password2:
+            return JsonResponse({
+                "status": False,
+                "message": "Passwords do not match."
+            }, status=400)
+        
+        if UserProfile.objects.filter(username=username).exists():
+            return JsonResponse({
+                "status": False,
+                "message": "Username already exists."
+            }, status=400)
+        
+        if UserProfile.objects.filter(email=email).exists():
+            return JsonResponse({
+                "status": False,
+                "message": "Email already exists."
+            }, status=400)
+        
+        # Create user
+        try:
+            user = UserProfile.objects.create_user(
+                username=username,
+                email=email,
+                password=password1,
+                first_name=first_name,
+                last_name=last_name,
+                bio=bio,
+                is_admin=False
+            )
+            
+            return JsonResponse({
+                "username": user.username,
+                "status": 'success',
+                "message": "User created successfully!"
+            }, status=200)
+        except Exception as e:
+            return JsonResponse({
+                "status": False,
+                "message": f"Registration failed: {str(e)}"
+            }, status=400)
+    
+    return JsonResponse({
+        "status": False,
+        "message": "Invalid request method."
+    }, status=400)
+
+@csrf_exempt
+def flutter_logout(request):
+    """Logout endpoint specifically for Flutter mobile app"""
+    username = request.user.username if request.user.is_authenticated else "Guest"
+    try:
+        auth_logout(request)
+        return JsonResponse({
+            "username": username,
+            "status": True,
+            "message": "Logged out successfully!"
+        }, status=200)
+    except Exception as e:
+        return JsonResponse({
+            "status": False,
+            "message": f"Logout failed: {str(e)}"
+        }, status=401)
+
+@csrf_exempt
+def get_user_profile_flutter(request):
+    """Get user profile for Flutter mobile app"""
+    if not request.user.is_authenticated:
+        return JsonResponse({
+            "status": False,
+            "message": "Not authenticated"
+        }, status=401)
+    
+    user = request.user
+    return JsonResponse({
+        "status": True,
+        "user_data": {
+            "username": user.username,
+            "email": user.email,
+            "first_name": user.first_name,
+            "last_name": user.last_name,
+            "bio": user.bio if user.bio else "",
+            "is_admin": user.is_admin
+        }
+    }, status=200)
+
+@csrf_exempt
+def update_profile_flutter(request):
+    """Update user profile for Flutter mobile app"""
+    if not request.user.is_authenticated:
+        return JsonResponse({
+            "status": False,
+            "message": "Not authenticated"
+        }, status=401)
+    
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        user = request.user
+        
+        try:
+            user.first_name = data.get('first_name', user.first_name)
+            user.last_name = data.get('last_name', user.last_name)
+            user.bio = data.get('bio', user.bio)
+            user.save()
+            
+            return JsonResponse({
+                "status": True,
+                "message": "Profile updated successfully!",
+                "user_data": {
+                    "username": user.username,
+                    "email": user.email,
+                    "first_name": user.first_name,
+                    "last_name": user.last_name,
+                    "bio": user.bio,
+                    "is_admin": user.is_admin
+                }
+            }, status=200)
+        except Exception as e:
+            return JsonResponse({
+                "status": False,
+                "message": f"Update failed: {str(e)}"
+            }, status=400)
+    
+    return JsonResponse({
+        "status": False,
+        "message": "Invalid request method."
+    }, status=400)
