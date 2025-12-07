@@ -86,7 +86,7 @@ class ExploreGunungExtraTests(TestCase):
         )
         # buat superuser dan login
         self.superuser = UserProfile.objects.create_superuser(
-            username="admin", password="adminpass", email="admin@example.com"
+            username="admin", password="adminpass", email="admin@example.com", is_admin=True
         )
         self.client.login(username="admin", password="adminpass")
 
@@ -175,8 +175,8 @@ class ExploreGunungExtraTests(TestCase):
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
         data = response.json()
-        self.assertIn('is_superuser', data)
-        self.assertTrue(data['is_superuser'])
+        self.assertIn('is_admin', data)
+        self.assertTrue(data['is_admin'])
 
     # ====== tests for GunungForm ======
     def test_gunung_form_valid(self):
