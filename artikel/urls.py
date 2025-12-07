@@ -21,6 +21,7 @@ urlpatterns = [
     path("api/artikel/create/", views.create_artikel_flutter, name="api_create_artikel_flutter"),
     path("api/artikel/<uuid:id>/edit/", views.edit_artikel_flutter, name="api_edit_artikel_flutter"),
     path("api/artikel/<uuid:id>/delete/", views.delete_artikel_flutter, name="api_delete_artikel_flutter"),
+    path("proxy/", views.proxy_image, name="proxy_image"),
 ]
 
 if settings.DEBUG:

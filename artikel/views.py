@@ -1,6 +1,7 @@
 from random import random
 from django.shortcuts import render, redirect, reverse, get_object_or_404
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseForbidden, JsonResponse
+import requests
 from artikel.models import Artikel
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib import messages
@@ -106,7 +107,8 @@ def create_artikel(request):
             "status": "error",
             "message": f"Terjadi kesalahan internal: {str(e)}"
         }, status=500)
-
+@login_required
+@csrf_exempt
 def create_artikel_flutter(request):
     try:
         title = request.POST.get("title", "").strip()
@@ -186,11 +188,11 @@ def edit_artikel(request, id):
         return JsonResponse({'status': 'success', 'message': 'Artikel berhasil diperbarui!'})
 
     return JsonResponse({'status': 'error', 'message': 'Gunakan AJAX POST untuk mengedit.'}, status=405)
-
+@login_required
 @csrf_exempt
-def edit_artikel_flutter(request, artikel_id):
+def edit_artikel_flutter(request, id):
     if request.method == 'POST':
-        artikel = get_object_or_404(Artikel, pk=artikel_id)
+        artikel = get_object_or_404(Artikel, pk=id)
         
         # Update title dan description
         artikel.title = request.POST.get('title')
@@ -233,6 +235,8 @@ def delete_artikel(request, id):
         print(f"Error deleting artikel: {e}")
         return JsonResponse({'error': f'Kesalahan internal: {str(e)}'}, status=500)
 
+@login_required
+@csrf_exempt
 def delete_artikel_flutter(request, id):
     if request.method != "DELETE":
         return JsonResponse({"error": "DELETE required"}, status=405)
@@ -356,3 +360,11 @@ def show_json_by_id(request, id):
 
     except Artikel.DoesNotExist:
         return JsonResponse({"error": "Not found"}, status=404)
+    
+def proxy_image(request):
+    url = request.GET.get("url")
+    if not url:
+        return HttpResponse("Missing URL", status=400)
+
+    r = requests.get(url, stream=True)
+    return HttpResponse(r.content, content_type=r.headers["Content-Type"])
