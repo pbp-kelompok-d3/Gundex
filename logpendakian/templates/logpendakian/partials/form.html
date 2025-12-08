@@ -1,0 +1,51 @@
+<form id="logpendakian-form" method="post" action="{{ action_url|default:request.path }}">
+  {% csrf_token %}
+  {{ form.non_field_errors }}
+
+  <div class="lp-field">
+    <label for="id_gunung">Gunung:</label>
+    {{ form.gunung }}
+  </div>
+
+  <div class="lp-field">
+    <label for="id_start_date">{{ form.start_date.label }}:</label>
+    {{ form.start_date }}
+  </div>
+
+  <div class="lp-field">
+    <label for="id_end_date">{{ form.end_date.label }}:</label>
+    {{ form.end_date }}
+  </div>
+
+  <div class="lp-field">
+    <label for="id_notes">{{ form.notes.label }}:</label>
+    {{ form.notes }}
+  </div>
+
+  <div class="lp-field lp-inline">
+    <label for="id_summit_reached">{{ form.summit_reached.label }}?</label>
+    {{ form.summit_reached }}
+  </div>
+
+  <div class="lp-field">
+    <label for="id_team_size">{{ form.team_size.label }}:</label>
+    {{ form.team_size }}
+  </div>
+  
+  <div class="lp-field">
+    <label for="id_rating">{{ form.rating.label }}:</label>
+    {{ form.rating }}
+  </div>
+  {% if form.non_field_errors %}
+  <div class="lp-errors">
+    <strong>Perlu diperbaiki:</strong>
+      <ul>
+        {% for e in form.non_field_errors %}<li>{{ e }}</li>{% endfor %}
+      </ul>
+  </div>
+  {% endif %}
+  <div class="lp-modal__actions">
+    <button type="submit" class="lp-btn">Simpan</button>
+    <button type="button" class="lp-btn lp-btn--ghost" data-close-modal>Batal</button>
+  </div>
+</form>

@@ -69,14 +69,13 @@ class ExploreGunungViewsTest(TestCase):
         self.assertContains(response, self.g1.nama)
 
     def test_show_gunung_not_found(self):
-        fake_uuid = uuid.uuid4()  # UUID valid tapi tidak ada di DB
+        fake_uuid = uuid.uuid4()  
         response = self.client.get(reverse('explore_gunung:show_gunung', args=[fake_uuid]))
         self.assertEqual(response.status_code, 404)
 
 class ExploreGunungExtraTests(TestCase):
     def setUp(self):
         self.client = Client()
-        # bikin data Gunung baru khusus test ini
         self.gunung = Gunung.objects.create(
             nama="Gunung Test",
             ketinggian=1234,
@@ -84,7 +83,6 @@ class ExploreGunungExtraTests(TestCase):
             foto="https://example.com/test.jpg",
             deksripsi="Gunung untuk testing"
         )
-        # buat superuser dan login
         self.superuser = UserProfile.objects.create_superuser(
             username="admin", password="adminpass", email="admin@example.com", is_admin=True
         )
@@ -143,7 +141,6 @@ class ExploreGunungExtraTests(TestCase):
             "nama": "Gunung Exception",
             "provinsi": "Bali"
         }
-        # monkeypatch: buat method save raise error
         original_save = Gunung.save
         def broken_save(*args, **kwargs):
             raise Exception("DB error")
@@ -153,7 +150,7 @@ class ExploreGunungExtraTests(TestCase):
             url, data=json.dumps(payload),
             content_type='application/json'
         )
-        Gunung.save = original_save  # balikin method
+        Gunung.save = original_save  
         self.assertEqual(response.status_code, 500)
         self.assertIn("Gagal menyimpan", response.json()['message'])
 
@@ -167,7 +164,7 @@ class ExploreGunungExtraTests(TestCase):
     def test_delete_gunung(self):
         url = reverse('explore_gunung:delete_gunung', args=[self.gunung.id])
         response = self.client.post(url)
-        self.assertEqual(response.status_code, 302)  # redirect
+        self.assertEqual(response.status_code, 302)  
         self.assertFalse(Gunung.objects.filter(id=self.gunung.id).exists())
 
     def test_show_json_includes_superuser_flag(self):
@@ -178,7 +175,6 @@ class ExploreGunungExtraTests(TestCase):
         self.assertIn('is_admin', data)
         self.assertTrue(data['is_admin'])
 
-    # ====== tests for GunungForm ======
     def test_gunung_form_valid(self):
         form_data = {
             'nama': 'Gunung Slamet',
@@ -225,7 +221,7 @@ class ExploreGunungExtraTests(TestCase):
         url = reverse('explore_gunung:edit_gunung', args=[self.gunung.id])
         payload = {"nama": "Gunung Exception", "provinsi": "Bali"}
         original_save = Gunung.save
-        Gunung.save = lambda *a, **kw: (_ for _ in ()).throw(Exception("DB error"))  # raise exception
+        Gunung.save = lambda *a, **kw: (_ for _ in ()).throw(Exception("DB error"))  
         response = self.client.post(url, data=json.dumps(payload), content_type='application/json')
         Gunung.save = original_save
         self.assertEqual(response.status_code, 500)
