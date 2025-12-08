@@ -15,10 +15,44 @@
       {% if x.team_size %} • {{ x.team_size }} orang{% endif %}
       {% if x.rating %} • ⭐ {{ x.rating }}/5{% endif %}
     </div>
-    {% if x.notes %}<div class="lp-card__notes">{{ x.notes|linebreaksbr }}</div>{% endif %}
+
+    {# preview catatan pendek di card #}
+    {% if x.notes %}
+      <div class="lp-card__notes">
+        {{ x.notes|truncatechars:120 }}
+      </div>
+
+      {# versi full buat modal (disembunyiin) #}
+      <div class="lp-card__notes-full" hidden>
+        {{ x.notes|linebreaksbr }}
+      </div>
+    {% endif %}
+
     <div class="lp-item__actions">
-      <button type="button" class="lp-action lp-btn--link" data-action="edit" data-id="{{ x.id }}">Edit</button>
-      <button type="button" class="lp-action lp-btn--link" data-action="delete" data-id="{{ x.id }}">Hapus</button>
+      <div class="lp-item__actions-left">
+        <button type="button"
+                class="lp-action lp-btn--link"
+                data-action="edit"
+                data-id="{{ x.id }}">
+          Edit
+        </button>
+        <button type="button"
+                class="lp-action lp-btn--link"
+                data-action="delete"
+                data-id="{{ x.id }}">
+          Hapus
+        </button>
+      </div>
+
+      {# tombol detail di kanan bawah card #}
+      {% if x.notes %}
+        <button type="button"
+                class="lp-action lp-btn--link lp-action--detail"
+                data-action="detail"
+                data-id="{{ x.id }}">
+          Detail
+        </button>
+      {% endif %}
     </div>
   </div>
 </li>

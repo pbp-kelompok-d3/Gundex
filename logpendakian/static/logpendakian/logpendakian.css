@@ -57,9 +57,18 @@
 .lp-item__actions {
   margin-top: 0.6rem;
   display: flex;
+  align-items: center;
+  justify-content: space-between;
   gap: 0.5rem;
   flex-wrap: wrap;
 }
+
+.lp-item__actions-left {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
 
 /* HERO FOTO */
 .lp-hero {
@@ -251,8 +260,15 @@
 
 .lp-card__notes{
   margin: 0.35rem 0;
-  white-space: pre-wrap;
+  font-size: 0.95rem;
+  color: #374151;
+  white-space: normal;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
+
 
 .lp-btn--link{
   padding: 0;
@@ -336,14 +352,14 @@ input[type="date"].lp-input {
 .lp-modal__dialog {
   position: fixed;
   left: 50%;
-  top: 8vh;
-  transform: translateX(-50%);
-  width: clamp(320px, 92vw, 520px);
-  max-height: 84vh;
-  overflow: auto;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: clamp(320px, 92vw, 560px);
+  max-height: calc(100vh - 3rem);
+  overflow-y: auto;
   background: #fff;
   border-radius: 14px;
-  padding: 1rem 1.2rem;
+  padding: 1.4rem 1.6rem;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
   box-sizing: border-box;
   z-index: 1000;
@@ -351,9 +367,9 @@ input[type="date"].lp-input {
 
 @media (max-width: 420px) {
   .lp-modal__dialog {
-    top: 5vh;
     width: 94vw;
     padding: 0.9rem;
+    max-height: calc(100vh - 2rem);
   }
 }
 
@@ -449,5 +465,91 @@ input[type="date"].lp-input {
 }
 
 .lp-errors ul{
-    margin:.25rem 0 0 1rem;
+  margin:.25rem 0 0 1rem;
+}
+
+/* DETAIL MODAL (untuk tombol Detail) */
+.lp-detail {
+  padding: 1.6rem 1.8rem 1.5rem;
+}
+
+/* header: gambar + teks */
+.lp-detail__header {
+  display: flex;
+  gap: 1.25rem;
+  align-items: center;
+}
+
+.lp-detail__img {
+  width: 120px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 0.75rem;
+  flex-shrink: 0;
+}
+
+.lp-detail__headtext {
+  flex: 1;
+  min-width: 0;
+}
+
+.lp-detail__title {
+  font-size: 1.15rem;
+  font-weight: 700;
+  margin: 0 0 0.25rem;
+}
+
+.lp-detail__meta {
+  font-size: 0.9rem;
+  color: #667085;
+}
+
+/* garis pemisah di bawah meta */
+.lp-detail__divider {
+  margin: 1.2rem 0 1rem;
+  border: 0;
+  border-top: 1px solid #e5e7eb;
+}
+
+/* box catatan */
+.lp-detail__notes-wrapper {
+  background: #f9fafb;
+  border-radius: 0.75rem;
+  padding: 1rem 1.1rem;
+  border: 1px solid #e5e7eb;
+}
+
+.lp-detail__notes-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #6b7280;
+  margin-bottom: 0.4rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.lp-detail__notes {
+  white-space: pre-wrap;
+  line-height: 1.55;
+  color: #111827;
+}
+
+.lp-detail__notes p {
+  margin: 0 0 0.6rem;
+}
+
+.lp-detail__notes > *:first-child {
+  margin-top: 0;
+}
+
+.lp-detail__notes > *:last-child {
+  margin-bottom: 0;
+}
+
+
+/* footer tombol tutup */
+.lp-detail__footer {
+  margin-top: 1.25rem;
+  display: flex;
+  justify-content: flex-start;
 }

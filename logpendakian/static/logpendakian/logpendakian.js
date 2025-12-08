@@ -375,12 +375,59 @@ async function onSubmitDelete(e) {
     }
 
     if (action === "edit") {
-      const json = await fetchJsonOrAlert(`${base}/${id}/edit/`);
-      if (json && json.html) openModalWith(json.html);
+    const json = await fetchJsonOrAlert(`${base}/${id}/edit/`);
+    if (json && json.html) openModalWith(json.html);
+
     } else if (action === "delete") {
       const json = await fetchJsonOrAlert(`${base}/${id}/delete/`);
       if (json && json.html) openModalWith(json.html);
-    }
+
+    } else if (action === "detail") {
+      const card = btn.closest(".lp-card");
+      if (!card) return;
+
+    const titleEl = card.querySelector(".lp-card__title");
+    const metaEl = card.querySelector(".lp-card__meta");
+    const fullEl = card.querySelector(".lp-card__notes-full");
+    const imgEl = card.querySelector(".lp-card__img");
+
+    const title = titleEl ? titleEl.textContent.trim() : "Detail Log Pendakian";
+    const meta = metaEl ? metaEl.textContent.trim() : "";
+    const notesHtml = fullEl ? fullEl.innerHTML : "<p>Tidak ada catatan.</p>";
+    const imgSrc = imgEl ? imgEl.src : "";
+    const imgAlt = imgEl ? imgEl.alt || "Foto gunung" : "Foto gunung";
+
+      const html = `
+      <div class="lp-detail">
+        <div class="lp-detail__header">
+          ${imgSrc ? `<img class="lp-detail__img" src="${imgSrc}" alt="${imgAlt}">` : ""}
+          <div class="lp-detail__headtext">
+            <h2 class="lp-detail__title">${title}</h2>
+            ${meta ? `<div class="lp-detail__meta">${meta}</div>` : ""}
+          </div>
+        </div>
+
+        <hr class="lp-detail__divider" />
+
+        <div class="lp-detail__notes-wrapper">
+          <div class="lp-detail__notes-label">Catatan Pendakian</div>
+          <div class="lp-detail__notes">
+          ${notesHtml}
+         </div>
+       </div>
+
+        <div class="lp-detail__footer">
+          <button type="button"
+                  class="lp-btn--link"
+                  data-close-modal>
+            Tutup
+          </button>
+        </div>
+      </div>
+    `;
+
+    openModalWith(html);
+  }
     });
 
 
