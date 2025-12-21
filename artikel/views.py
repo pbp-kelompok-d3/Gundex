@@ -19,6 +19,7 @@ from django.contrib import messages
 from django.core.paginator import Paginator
 import uuid
 from django.conf import settings
+from django.db.models import Count
 
 
 
@@ -53,7 +54,17 @@ def show_artikel(request):
 def index(request):
     return render(request, 'full_artikel.html')
 
+# Helper untuk cek admin
+def is_admin(user):
+    return (
+        user.is_authenticated and
+        (user.is_staff or user.is_superuser or getattr(user, "is_admin", False))
+    )
 
+def whoami(request):
+    return JsonResponse({
+        "is_admin": is_admin(request.user)
+    })
 # =========================================================
 # 🔹 DETAIL ARTIKEL
 # =========================================================
@@ -111,10 +122,17 @@ def create_artikel(request):
             "status": "error",
             "message": f"Terjadi kesalahan internal: {str(e)}"
         }, status=500)
-
+    
+@login_required
 @csrf_exempt
 def create_artikel_flutter(request):
     try:
+        if not is_admin(request.user):
+            return JsonResponse({"error": "Admin only"}, status=403)
+        
+        if request.method != "POST":
+            return JsonResponse({"error": "POST required"}, status=405)
+        
         title = request.POST.get("title", "").strip()
         description = request.POST.get("description", "").strip()
         image = request.FILES.get('image')
@@ -192,10 +210,13 @@ def edit_artikel(request, id):
         return JsonResponse({'status': 'success', 'message': 'Artikel berhasil diperbarui!'})
 
     return JsonResponse({'status': 'error', 'message': 'Gunakan AJAX POST untuk mengedit.'}, status=405)
-
+@login_required
 @csrf_exempt
 def edit_artikel_flutter(request, id):
     artikel = get_object_or_404(Artikel, pk=id)
+
+    if not is_admin(request.user):
+        return JsonResponse({"error": "Admin only"}, status=403)
 
     if request.method != 'POST':
         return JsonResponse({'status': 'error', 'message': 'POST required'}, status=405)
@@ -242,15 +263,23 @@ def delete_artikel(request, id):
         print(f"Error deleting artikel: {e}")
         return JsonResponse({'error': f'Kesalahan internal: {str(e)}'}, status=500)
 
+@login_required
 @csrf_exempt
 def delete_artikel_flutter(request, id):
-    if request.method != "DELETE":
-        return JsonResponse({"error": "DELETE required"}, status=405)
+    if not is_admin(request.user):
+        return JsonResponse({"error": "Admin only"}, status=403)
+
+    # TERIMA POST DAN DELETE
+    if request.method not in ["POST", "DELETE"]:
+        return JsonResponse(
+            {"error": "POST or DELETE required"},
+            status=405
+        )
 
     artikel = get_object_or_404(Artikel, pk=id)
     artikel.delete()
 
-    return JsonResponse({"status": "success"})
+    return JsonResponse({"status": "success"}, status=200)
 # =========================================================
 # 🔹 EDIT MODAL RENDER (untuk AJAX load)
 # =========================================================
@@ -282,10 +311,12 @@ def get_random_recommendations(request):
         return JsonResponse({"artikels": data})
     return JsonResponse({"error": "Gunakan method GET"}, status=405)
 
-@login_required
 @require_POST
 @csrf_exempt
-def like_artikel(request, id):
+def like_artikel_flutter(request, id):
+    if not request.user.is_authenticated:
+        return JsonResponse({"error": "LOGIN_REQUIRED"}, status=401)
+
     artikel = get_object_or_404(Artikel, pk=id)
     user = request.user
 
@@ -299,7 +330,7 @@ def like_artikel(request, id):
     return JsonResponse({
         "status": "success",
         "liked": liked,
-        "total_likes": artikel.total_likes()
+        "total_likes": artikel.total_likes(),
     })
 
 
@@ -341,8 +372,15 @@ def show_xml_by_id(request, id):
     return HttpResponse(serializers.serialize("xml", data), content_type="application/xml")
 
 # menampilkan artikel berdasarkan id dalam format JSON
+
 def show_json_by_id(request, id):
+    if not request.user.is_authenticated:
+        return JsonResponse(
+            {"error": "LOGIN_REQUIRED"},
+               status=401
+    )
     try:
+
         a = Artikel.objects.get(pk=id)
 
         image_url = None
@@ -373,3 +411,68 @@ def proxy_image(request):
 
     r = requests.get(url, stream=True)
     return HttpResponse(r.content, content_type=r.headers["Content-Type"])
+
+
+def api_latest_artikels(request):
+    artikels = Artikel.objects.order_by("-created_at")[:5]
+    return JsonResponse([
+        artikel_to_json(a, request)
+        for a in artikels
+    ], safe=False)
+
+def api_recommended_artikels(request):
+    artikels = list(Artikel.objects.all())
+    py_random.shuffle(artikels)
+    artikels = artikels[:7]
+    return JsonResponse([
+        artikel_to_json(a, request)
+        for a in artikels
+    ], safe=False)
+
+def api_popular_artikels(request):
+    artikels = Artikel.objects.order_by("-views")[:10]
+    return JsonResponse([
+        artikel_to_json(a, request)
+        for a in artikels
+    ], safe=False)
+
+def api_hottest_artikels(request):
+    artikels = Artikel.objects.annotate(
+        like_count=Count("likes")
+    ).order_by("-like_count", "-created_at")[:10]
+    return JsonResponse([
+        artikel_to_json(a, request)
+        for a in artikels
+    ], safe=False)
+
+
+# Helper untuk menyamakan format JSON
+def artikel_to_json(a, request):
+    image_url = None
+    if a.image:
+        if a.image.startswith("http"):
+            image_url = a.image
+        else:
+            image_url = request.build_absolute_uri(settings.MEDIA_URL + a.image.lstrip("/"))
+
+    return {
+        "id": str(a.id),
+        "title": a.title,
+        "description": a.description,
+        "image": image_url,
+        "views": a.views,
+        "likes": a.total_likes(),
+        "created_at": a.created_at.isoformat(),
+    }
+
+@login_required
+@csrf_exempt
+def increment_views(request, id):
+    if request.method != "POST":
+        return JsonResponse({"error": "POST required"}, status=405)
+
+    artikel = get_object_or_404(Artikel, pk=id)
+    artikel.views += 1
+    artikel.save(update_fields=["views"])
+
+    return JsonResponse({"views": artikel.views})
