@@ -68,7 +68,7 @@ def whoami(request):
 # =========================================================
 # 🔹 DETAIL ARTIKEL
 # =========================================================
-@login_required
+@login_required(login_url='/userprofile/login/')
 def artikel_detail(request, id):
     artikel = get_object_or_404(Artikel, id=id)
     artikel.views += 1
