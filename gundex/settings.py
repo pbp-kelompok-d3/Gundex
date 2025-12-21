@@ -42,20 +42,20 @@ PRODUCTION = os.getenv('PRODUCTION', 'False').lower() == 'true'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-# CORS Configuration
-CORS_ALLOW_ALL_ORIGINS = True
-CORS_ALLOW_CREDENTIALS = True
-CSRF_COOKIE_SECURE = True
-SESSION_COOKIE_SECURE = True
-CSRF_COOKIE_SAMESITE = 'None'
-SESSION_COOKIE_SAMESITE = 'None'
-
-ALLOWED_HOSTS = ["localhost", "127.0.0.1", "rasyad-zulham-gundex.pbp.cs.ui.ac.id", "127.0.0.1:8000", "10.0.2.2"]
-
-CSRF_TRUSTED_ORIGINS = [
-    "https://rasyad-zulham-gundex.pbp.cs.ui.ac.id"
+ALLOWED_HOSTS = [
+    "localhost",
+    "127.0.0.1",
+    "10.0.2.2",
+    "rasyad-zulham-gundex.pbp.cs.ui.ac.id",
+    "[::1]",
 ]
 
+CSRF_TRUSTED_ORIGINS = [
+    "http://localhost:*",
+    "http://127.0.0.1:*",
+    "http://10.0.2.2:*",
+    "https://rasyad-zulham-gundex.pbp.cs.ui.ac.id",
+]
 
 # Application definition
 
@@ -166,7 +166,8 @@ USE_I18N = True
 
 USE_TZ = True
 
-
+MEDIA_URL = "/media/"
+MEDIA_ROOT = BASE_DIR / "media"
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
@@ -189,3 +190,10 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:8000",
     "http://10.0.2.2:8000",
 ]
+CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOW_CREDENTIALS = True
+CSRF_COOKIE_SECURE = False
+SESSION_COOKIE_SECURE = False
+
+CSRF_COOKIE_SAMESITE = 'Lax'
+SESSION_COOKIE_SAMESITE = 'Lax'

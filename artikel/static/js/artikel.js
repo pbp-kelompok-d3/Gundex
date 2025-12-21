@@ -11,5 +11,9 @@ document.addEventListener("DOMContentLoaded", function() {
         carouselInner.style.transform = `translateX(-${index * 100}%)`;
     }
 
+<<<<<<< HEAD
     setInterval(slideNext, 4000); // Geser setiap 4 detik
+=======
+    setInterval(slideNext, 8000); // Geser setiap 8 detik
+>>>>>>> 0d85c9f1061ae6957fadf6d4d17f1148a26b6ac9
 });
